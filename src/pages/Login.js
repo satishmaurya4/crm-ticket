@@ -7,10 +7,10 @@ const Login = () => {
   const [showSignup, setShowSignup] = useState(false);
   const [userType, setUserType] = useState("CUSTOMER");
   const [userSignupData, setUserSignupData] = useState({});
-  const [userSigninData, setUserSigninData] = useState({})
-  const [errorMessage, setErrorMessage] = useState('');
+  const [userSigninData, setUserSigninData] = useState({});
+  const [errorMessage, setErrorMessage] = useState("");
+  const [signInErrorMessage, setSignInErrorMessage] = useState("");
   const navigate = useNavigate();
-
 
   const toggleSignup = () => {
     setShowSignup(!showSignup);
@@ -38,35 +38,51 @@ const Login = () => {
     userSignup(data)
       .then(function (response) {
         if (response.status === 201) {
-          window.location.href = '/'
+          window.location.href = "/";
         }
       })
       .catch(function (error) {
         if (error.response.status === 400) {
           setErrorMessage(error.response.data.message);
         } else {
-          console.log(error)
+          console.log(error);
         }
       });
   };
 
   const userSigninDataSubmitHandler = (e) => {
     e.preventDefault();
-    console.log(userSigninData)
-    userSignin(userSigninData).then(function (response) {
-      if (response.status === 201) {
-        console.log("sigin response", response.data)
-      //  window.location.href = '/home'
-        navigate('/home')
-     }
-    }).catch(function (error) {
-      if (error.response.status === 400) {
-       console.log("error occured")
-      } else {
-        console.log(error)
-     }
-   })
-}
+    console.log(userSigninData);
+    userSignin(userSigninData)
+      .then(function (response) {
+        if (response.data.message) {
+          setSignInErrorMessage(response.data.message);
+        } else {
+          console.log("sigin response", response.data);
+          localStorage.setItem("name", response.data.name);
+          localStorage.setItem("userId", response.data.userId);
+          localStorage.setItem("email", response.data.email);
+          localStorage.setItem("userType", response.data.userTypes);
+          localStorage.setItem("userStatus", response.data.userStatus);
+          localStorage.setItem("token", response.data.accessToken);
+          if (response.data.userTypes === "CUSTOMER") {
+            window.location.href = "/customer";
+          } else if (response.data.userTypes === "ENGINEER") {
+            window.location.href = "/engineer";
+          } else {
+            window.location.href = "/admin";
+          }
+        }
+      })
+      .catch(function (error) {
+        if (error.response.status === 400) {
+          setSignInErrorMessage(error.response.data.message);
+        } else {
+          console.log(error);
+          setSignInErrorMessage(error.message);
+        }
+      });
+  };
 
   return (
     <div className="bg-primary d-flex justify-content-center align-items-center vh-100">
@@ -77,7 +93,6 @@ const Login = () => {
               <div className="login">
                 <form onSubmit={userSigninDataSubmitHandler}>
                   <div className="form-group mb-2">
-                    {/* <label htmlFor="userId" className="form-label">User ID:</label> */}
                     <input
                       type="text"
                       id="userId"
@@ -87,7 +102,6 @@ const Login = () => {
                     />
                   </div>
                   <div className="form-group mb-2">
-                    {/* <label htmlFor="password" className="form-label">Password:</label> */}
                     <input
                       type="password"
                       id="password"
@@ -106,52 +120,45 @@ const Login = () => {
                   >
                     Don't have an account. Signup!
                   </p>
+                  <p className="text-danger">{signInErrorMessage}</p>
                 </form>
               </div>
             ) : (
               <div className="signup">
                 <form onSubmit={userSignupDataSubmitHandler}>
                   <div className="form-group mb-2">
-                    {/* <label htmlFor="userId" className="form-label">User ID:</label> */}
                     <input
                       type="text"
                       id="userId"
                       className="form-control"
                       placeholder="User ID"
-                      // value={userSignupData.userId}
                       onChange={userSignupDataHandler}
                     />
                   </div>
                   <div className="form-group mb-2">
-                    {/* <label htmlFor="userId" className="form-label">User ID:</label> */}
                     <input
                       type="text"
                       id="name"
                       className="form-control"
                       placeholder="Username"
-                      // value={userSignupData.username}
                       onChange={userSignupDataHandler}
                     />
                   </div>
                   <div className="form-group mb-2">
-                    {/* <label htmlFor="userId" className="form-label">User ID:</label> */}
                     <input
                       type="email"
                       id="email"
                       className="form-control"
                       placeholder="Email"
-                      // value={userSignupData.email}
                       onChange={userSignupDataHandler}
                     />
                   </div>
                   <div className="form-group mb-2">
-                    {/* <label htmlFor="password" className="form-label">Password:</label> */}
                     <input
                       type="password"
                       id="password"
                       className="form-control"
                       placeholder="Password"
-                      // value={userSignupData.password}
                       onChange={userSignupDataHandler}
                     />
                   </div>
@@ -181,8 +188,8 @@ const Login = () => {
                     onClick={toggleSignup}
                   >
                     Already have an account. Login!
-                    </p>
-                    <p className="text-danger">{errorMessage}</p>
+                  </p>
+                  <p className="text-danger">{errorMessage}</p>
                 </form>
               </div>
             )}
