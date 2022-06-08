@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// const BASE_URL = process.env.REACT_APP_SERVER_URL;
-const BASE_URL = "https://relevel-crm--backend.herokuapp.com";
+const BASE_URL = process.env.REACT_APP_SERVER_URL;
+// const BASE_URL = "https://relevel-crm--backend.herokuapp.com";
 
 
 export async function userSignup(data) {

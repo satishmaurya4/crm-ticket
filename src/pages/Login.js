@@ -30,6 +30,7 @@ const Login = () => {
 
   const userSignupDataSubmitHandler = (e) => {
     e.preventDefault();
+    console.log(userType)
     const data = {
       ...userSignupData,
       userType: userType,
@@ -52,8 +53,13 @@ const Login = () => {
 
   const userSigninDataSubmitHandler = (e) => {
     e.preventDefault();
-    console.log(userSigninData);
-    userSignin(userSigninData)
+    const userId= userSigninData.userId;
+    const password= userSigninData.password;
+    const data = {
+      userId,
+      password
+    }
+    userSignin(data)
       .then(function (response) {
         if (response.data.message) {
           setSignInErrorMessage(response.data.message);
@@ -66,11 +72,11 @@ const Login = () => {
           localStorage.setItem("userStatus", response.data.userStatus);
           localStorage.setItem("token", response.data.accessToken);
           if (response.data.userTypes === "CUSTOMER") {
-            window.location.href = "/customer";
+            navigate("/customer");
           } else if (response.data.userTypes === "ENGINEER") {
-            window.location.href = "/engineer";
+            navigate("/engineer");
           } else {
-            window.location.href = "/admin";
+            navigate("/admin");
           }
         }
       })
@@ -126,11 +132,11 @@ const Login = () => {
             ) : (
               <div className="signup">
                 <form onSubmit={userSignupDataSubmitHandler}>
-                  <div className="form-group mb-2">
+                  <div className="input-group mb-2">
                     <input
                       type="text"
                       id="userId"
-                      className="form-control"
+                      className="input-control"
                       placeholder="User ID"
                       onChange={userSignupDataHandler}
                     />
@@ -139,7 +145,7 @@ const Login = () => {
                     <input
                       type="text"
                       id="name"
-                      className="form-control"
+                      className="input-control"
                       placeholder="Username"
                       onChange={userSignupDataHandler}
                     />
@@ -148,7 +154,7 @@ const Login = () => {
                     <input
                       type="email"
                       id="email"
-                      className="form-control"
+                      className="input-control"
                       placeholder="Email"
                       onChange={userSignupDataHandler}
                     />
@@ -157,7 +163,7 @@ const Login = () => {
                     <input
                       type="password"
                       id="password"
-                      className="form-control"
+                      className="input-control"
                       placeholder="Password"
                       onChange={userSignupDataHandler}
                     />
