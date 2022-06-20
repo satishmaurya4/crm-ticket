@@ -39,7 +39,7 @@ const Login = () => {
     userSignup(data)
       .then(function (response) {
         if (response.status === 201) {
-          window.location.href = "/";
+          navigate(0)
         }
       })
       .catch(function (error) {
@@ -102,7 +102,7 @@ const Login = () => {
                     <input
                       type="text"
                       id="userId"
-                      className="form-control"
+                      // className="form-control"
                       placeholder="User ID"
                       onChange={userSigninDataHandler}
                     />
@@ -111,7 +111,7 @@ const Login = () => {
                     <input
                       type="password"
                       id="password"
-                      className="form-control"
+                      // className="form-control"
                       placeholder="Password"
                       onChange={userSigninDataHandler}
                     />

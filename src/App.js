@@ -1,5 +1,3 @@
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min";
 import { Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Admin from "./pages/Admin";
@@ -9,6 +7,13 @@ import RequireAuth from "./components/RequireAuth";
 import Customer from "./pages/Customer";
 import Engineer from "./pages/Engineer";
 import NotFound from "./components/NotFound";
+import Unauthorized from "./components/Unauthorised";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min";
+import '@coreui/coreui/dist/css/coreui.min.css'
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "react-circular-progressbar/dist/styles.css"
+
 
 const ROLES = {
   CUSTOMER: "CUSTOMER",
@@ -46,7 +51,9 @@ function App() {
             </Suspense>
           }
         /> */}
+        <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/*" element={<NotFound />} />
+      
       </Routes>
     </Router>
   );
