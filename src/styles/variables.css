@@ -1,0 +1,18 @@
+:root {
+  --login-bg-color: rgb(190, 242, 239);
+  --admin-bg-color: rgb(233, 233, 233);
+  --admin-content-color: rgb(6, 54, 125);
+  --engineer-content-color: rgb(176, 73, 5);
+  --customer-content-color: #0890bd;
+  --open-ticket-bg-color:rgb(18,120,165);
+  --open-ticket-bg-gradient: linear-gradient(90deg, rgba(18,120,165,1) 0%, rgba(16,55,141,1) 100%, rgba(255,70,4,1) 100%, rgba(255,106,0,1) 100%, rgba(248,212,0,1) 100%, rgba(1,62,125,1) 100%);
+  --success-ticket-bg-gradient:  linear-gradient(90deg, rgba(46,177,73,1) 0%, rgba(18,149,45,1) 55%, rgba(17,112,49,1) 100%, rgba(6,151,91,1) 100%, rgba(10,168,68,1) 100%, rgba(16,112,80,1) 100%);
+  --pending-ticket-bg-gradient: linear-gradient(90deg, rgba(172,171,53,1) 0%, rgba(135,133,12,1) 100%, rgba(213,207,33,1) 100%, rgba(168,161,10,1) 100%, rgba(112,107,16,1) 100%, rgba(205,191,27,1) 100%);
+  --blocked-ticket-bg-gradient: linear-gradient(90deg, rgba(212,72,162,1) 0%, rgba(147,33,83,1) 100%, rgba(168,68,10,1) 100%, rgba(213,68,33,1) 100%, rgba(205,65,27,1) 100%, rgba(135,38,12,1) 100%);
+  --admin-content-bg-gradient: linear-gradient(90deg, rgba(67,47,198,1) 0%, rgba(37,31,138,1) 27%, rgba(36,30,137,1) 86%, rgba(16,9,121,1) 100%, rgba(0,212,255,1) 100%);
+  --engineer-content-bg-gradient: linear-gradient(90deg, rgba(236,142,54,1) 0%, rgba(163,61,14,1) 100%, rgba(236,69,24,1) 100%, rgba(147,33,83,1) 100%, rgba(168,68,10,1) 100%, rgba(224,87,34,1) 100%);
+  --customer-content-bg-gradient: linear-gradient(90deg, rgba(69,191,236,1) 0%, rgba(6,154,181,1) 100%, rgba(236,69,24,1) 100%, rgba(147,33,83,1) 100%, rgba(168,68,10,1) 100%, rgba(224,87,34,1) 100%);
+  --admin-tab-bg-color: rgb(192, 204, 243);
+  --engineer-tab-bg-color: rgb(222, 147, 96);
+  --customer-tab-bg-color: rgb(128, 206, 239);
+}

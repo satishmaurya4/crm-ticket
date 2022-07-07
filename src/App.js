@@ -9,10 +9,13 @@ import Engineer from "./pages/Engineer";
 import NotFound from "./components/NotFound";
 import Unauthorized from "./components/Unauthorised";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min";
-import '@coreui/coreui/dist/css/coreui.min.css'
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "react-circular-progressbar/dist/styles.css"
+import 'antd/dist/antd.css';
+import "./styles/globalStyles.css"
+import "./App.css";
+import "./styles/variables.css"
+import "./styles/responsive.css"
 
 
 const ROLES = {
@@ -28,7 +31,7 @@ function App() {
         <Route
           path="/"
           element={
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<div style={{width: '100vw', height: '100vh', backgroundColor: 'blue', fontSize: '40px'}}>Loading...</div>}>
               <Login />
             </Suspense>
           }
@@ -39,9 +42,9 @@ function App() {
         <Route element={<RequireAuth allowedRoles={[ROLES.CUSTOMER]} />}>
           <Route path="/customer" exact element={<Customer />} />
         </Route>
-        <Route element={<RequireAuth allowedRoles={[ROLES.ENGINEER]} />}>
+        {/* <Route element={<RequireAuth allowedRoles={[ROLES.ENGINEER]} />}> */}
           <Route path="/engineer" exact element={<Engineer />} />
-        </Route>
+        {/* </Route> */}
 
         {/* <Route
           path="/home"

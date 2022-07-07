@@ -1,13 +1,15 @@
+import { useEffect, useRef, useState } from "react";
 import "../styles/Admin.css";
 import Sidebar from "../components/Sidebar";
-import MaterialTable from "@material-table/core";
-import { Modal } from "react-bootstrap";
-import { useEffect, useState } from "react";
 import { fetchTickets, ticketUpdation } from "../api/tickets";
-import { ExportCsv, ExportPdf } from "@material-table/exporters";
-import { getAllUsers } from "../api/users";
+import { getAllUsers, updateUserDetails } from "../api/users";
 import TicketCountCard from "../components/TicketCountCard";
-
+import TicketTable from "../components/TicketTable";
+import UserTable from "../components/UserTable";
+import TicketModal from "../components/UI/modals/TicketModal";
+import UserModal from "../components/UI/modals/UserModal";
+import { goToTicketRecord } from "../utils/goToTicketRecord";
+import { logout } from "../utils/logout";
 // showing some representational data
 // graphs: to show statistic data
 // access : view all the users
@@ -18,43 +20,75 @@ import TicketCountCard from "../components/TicketCountCard";
 // edit details
 
 const Admin = () => {
-  const [userModal, setUserModal] = useState(false);
+  // ticket states
   const [ticketModal, setTicketModal] = useState(false);
-  const [ticketList, setTicketList] = useState([]);
+  const [allTicket, setAllTicket] = useState([]);
+  const [openTicket, setOpenTicket] = useState([]);
+  const [closedTicket, setClosedTicket] = useState([]);
+  const [pendingTicket, setPendingTicket] = useState([]);
+  const [blockedTicket, setBlockedTicket] = useState([]);
+
   const [allUserDetails, setAllUserDetails] = useState([]);
-  const [ticketDetails, setTicketDetails] = useState({});
-  const [userDetails, setUserDetails] = useState({});
-  const [ticketId, setTicketId] = useState(null);
   const [selectedCurrTicket, setSelectedCurrTicket] = useState({});
   const [ticketsCount, setTicketsCount] = useState({});
-  // const [inputValue, setInputValue] = useState({
-  //   title: '',
-  //   description: '',
-  //   reporter: '',
-  //   ticketPriority: '',
-  //   status: ''
-  // })
 
-  const updateUser = (a, b) => {
-    console.log("event", a);
-    console.log("row data", b);
-    setUserModal(true);
+  // user states
+  const [userModal, setUserModal] = useState(false);
+  const [allUser, setAllUser] = useState([]);
+  const [approvedUser, setApprovedUser] = useState([]);
+  const [pendingUser, setPendingUser] = useState([]);
+  const [rejectedUser, setRejectedUser] = useState([]);
+  const [usersCount, setUsersCount] = useState({});
+  const [userDetail, setUserDetail] = useState({});
+
+  const ticketRecordRef = useRef();
+  const userRecordRef = useRef();
+
+  // ticket stuffs
+
+  const fetchTicket = () => {
+    fetchTickets()
+      .then(function (response) {
+        if (response.status === 200) {
+          console.log(response);
+
+          const getOpenTicket = response.data.filter((ticket) => {
+            return ticket.status === "OPEN";
+          });
+          const getClosedTicket = response.data.filter((ticket) => {
+            return ticket.status === "CLOSED";
+          });
+          const getPendingTicket = response.data.filter((ticket) => {
+            return ticket.status === "IN_PROGRESS";
+          });
+          const getBlockedTicket = response.data.filter((ticket) => {
+            return ticket.status === "BLOCKED";
+          });
+          setOpenTicket(getOpenTicket);
+          setClosedTicket(getClosedTicket);
+          setPendingTicket(getPendingTicket);
+          setBlockedTicket(getBlockedTicket);
+          setAllTicket(response.data);
+          updateTicketCount(response.data);
+        }
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          logout();
+        }
+        console.log(error);
+      });
   };
 
-  const updateSelectedCurrTicket = (data) => setSelectedCurrTicket(data);
-
-  const editTicket = (rowData) => {
-    // setTicketId(rowData.id);
-    // inputValue["title"] = rowData.title;
-    // console.log(rowData.title)
+  const editTicket = (ticketDetail) => {
     const ticket = {
-      id: rowData.id,
-      title: rowData.title,
-      description: rowData.description,
-      reporter: rowData.reporter,
-      assignee: rowData.assignee,
-      ticketPriority: rowData.ticketPriority,
-      status: rowData.status,
+      id: ticketDetail.id,
+      title: ticketDetail.title,
+      description: ticketDetail.description,
+      reporter: ticketDetail.reporter,
+      assignee: ticketDetail.assignee,
+      ticketPriority: ticketDetail.ticketPriority,
+      status: ticketDetail.status,
     };
     setSelectedCurrTicket(ticket);
     setTicketModal(true);
@@ -65,86 +99,55 @@ const Admin = () => {
       selectedCurrTicket.title = e.target.value;
     } else if (e.target.id === "description") {
       selectedCurrTicket.description = e.target.value;
-    } else if (e.target.id === "assignee") {
-      selectedCurrTicket.assignee = e.target.value;
-    } else if (e.target.id === "reporter") {
+    }
+    // else if (e.target.id === "assignee") {
+    //   selectedCurrTicket.assignee = e.target.value;
+    // }
+    else if (e.target.id === "reporter") {
       selectedCurrTicket.reporter = e.target.value;
     } else if (e.target.id === "ticketPriority") {
       selectedCurrTicket.ticketPriority = e.target.value;
-    } else {
+    } else if (e.target.id === "status") {
       selectedCurrTicket.status = e.target.value;
+    } else if (e.target.id === "assignee") {
+      selectedCurrTicket.assignee = e.target.value;
     }
     updateSelectedCurrTicket(Object.assign({}, selectedCurrTicket));
   };
+
+  const updateSelectedCurrTicket = (data) => setSelectedCurrTicket(data);
 
   const updateTicket = (e) => {
     e.preventDefault();
     ticketUpdation(selectedCurrTicket.id, selectedCurrTicket)
       .then(function (response) {
-        setTicketList(response.data);
+        fetchTicket();
         onCloseTicketModal();
       })
       .catch(function (error) {
-        console.log(error);
+        if (error.response.status === 400) setMessage(error.message);
+        else if (error.response.status === 401) logout();
+        else console.log(error);
       });
-  };
-
-  const closeUserModal = () => {
-    setUserModal(false);
   };
 
   const onCloseTicketModal = () => {
     setTicketModal(false);
   };
 
-  useEffect(() => {
-    (async () => {
-      fetchTicket();
-      getUsers();
-    })();
-  }, []);
-
-  const fetchTicket = () => {
-    fetchTickets()
-      .then(function (response) {
-        if (response.status === 200) {
-          console.log(response);
-          setTicketList(response.data);
-          updateTicketCount(response.data);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const getUsers = () => {
-    getAllUsers()
-      .then(function (response) {
-        if (response.status === 200) {
-          console.log(response);
-          setAllUserDetails(response.data);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  console.log("ticket details", ticketDetails);
-
   const updateTicketCount = (tickets) => {
     const data = {
+      all: 0,
       open: 0,
       pending: 0,
       closed: 0,
       blocked: 0,
     };
     tickets.forEach((ticket) => {
+      data.all += 1;
       switch (ticket.status) {
         case "OPEN":
           data.open += 1;
-          console.log("open");
           break;
         case "IN_PROGRESS":
           data.pending += 1;
@@ -165,250 +168,290 @@ const Admin = () => {
     setTicketsCount(data);
   };
 
+  // user stuffs
+
+  const fetchUsers = (userId) => {
+    console.log("user id", userId);
+    getAllUsers(userId)
+      .then(function (response) {
+        if (response.status === 200) {
+          if (userId) {
+            console.log("response data", response.data);
+            setUserDetail(response.data[0]);
+            showUserModal();
+          } else {
+            const userList = response.data;
+            const getApprovedUsers = userList.filter((user) => {
+              return user.userStatus === "APPROVED";
+            });
+            const getPendingUsers = userList.filter((user) => {
+              return user.userStatus === "PENDING";
+            });
+            const getRejectedUsers = userList.filter((user) => {
+              return user.userStatus === "REJECTED";
+            });
+            setAllUser(userList);
+            setApprovedUser(getApprovedUsers);
+            setPendingUser(getPendingUsers);
+            setRejectedUser(getRejectedUsers);
+            updateUsersCount(response.data);
+          }
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  console.log("user detail", userDetail);
+
+  const showUserModal = () => {
+    setUserModal(true);
+  };
+
+  // const editUser = (userDetail) => {
+  //   console.log("user detail", userDetail);
+  //   const data = {
+  //     userId: userDetail.userId,
+  //     name: userDetail.name,
+  //     email: userDetail.email,
+  //     userStatus: userDetail.userStatus,
+  //     userTypes: userDetail.userTypes
+  //   };
+  //   setUserModal(true);
+  //   setSelectedCurrUser(data);
+  // };
+
+  // const onUserUpdate = (e) => {
+  //   if (e.target.id === "name") {
+  //     selectedCurrUser.name = e.target.value;
+  //   } else if (e.target.id === "email") {
+  //     selectedCurrUser.email = e.target.value;
+  //   } else if(e.target.id === "userStatus") {
+  //     selectedCurrUser.userStatus = e.target.value;
+  //   } else if (e.target.id === "userTypes") {
+  //     selectedCurrUser.userTypes = e.target.value;
+  //   }
+  //   updateSelectedCurrUser(Object.assign({}, selectedCurrUser));
+  // };
+
+  // const updateSelectedCurrUser = (data) => setSelectedCurrUser(data);
+
+  const updateUser = () => {
+    const data = {
+      userType: userDetail.userTypes,
+      userStatus: userDetail.userStatus,
+      userName: userDetail.name,
+    };
+    updateUserDetails(userDetail.userId, data)
+      .then((res) => {
+        if (res.status === 200) {
+          let idx = allUser.findIndex(
+            (user) => user.userId === userDetail.userId
+          );
+          allUser[idx] = userDetail;
+          onCloseUserModal();
+        }
+      })
+      .catch((err) => {
+        if (err.status === 400) console.log(err.message);
+        else if (err.response.status === 401) logout();
+        else console.log(err);
+      });
+  };
+
+  const onCloseUserModal = () => {
+    setUserModal(false);
+  };
+
+  const updateUsersCount = (users) => {
+    const data = {
+      all: 0,
+      approved: 0,
+      pending: 0,
+      rejected: 0,
+    };
+    users.forEach((user) => {
+      data.all += 1;
+      switch (user.userStatus) {
+        case "APPROVED":
+          return (data.approved += 1);
+        case "PENDING":
+          return (data.pending += 1);
+        case "REJECTED":
+          return (data.rejected += 1);
+        default:
+          return;
+      }
+    });
+    setUsersCount(data);
+  };
+
+  const changeUserDetail = (e) => {
+    if (e.target.name === "status") userDetail.userStatus = e.target.value;
+    else if (e.target.name === "name") userDetail.name = e.target.value;
+    else if (e.target.name === "type") userDetail.userTypes = e.target.value;
+    setUserDetail(userDetail);
+    setUserModal(e.target.value);
+  };
+
+  const goToUserRecord = () => {
+    window.scrollTo({
+      top: userRecordRef.current.offsetTop,
+      behavior: "smooth",
+    });
+  };
+
+  const sidebarStyle = {
+    bg: {
+      backgroundColor: "var(--admin-content-color)",
+    },
+    logo: {
+      backgroundColor: "rgb(0, 0, 83)",
+    },
+  };
+
+  useEffect(() => {
+    (async () => {
+      fetchTicket();
+      fetchUsers("");
+    })();
+  }, []);
+
   return (
-    <div className="bg-light">
-      <div className="row w-100">
-        <div className="col-1">
-          <Sidebar />
-        </div>
-        <div className="container col">
-          <h3 className="text-primary text-center">Welcome Admin</h3>
-          <p className="text-muted text-center">
-            Take a quick look at your status below
-          </p>
+    <div className="page-container admin-container">
+      <Sidebar
+        sidebarStyle={sidebarStyle}
+        ticketRef={ticketRecordRef}
+        goToUserRecord={goToUserRecord}
+        admin
+      />
 
-          {/* STATS CARDS START HERE */}
-          <div className="row my-5">
-            <div className="col my-1">
-              <div className="row">
-                <TicketCountCard status="open" count={ticketsCount.open} />
-                <TicketCountCard status="closed" count={ticketsCount.closed} />
-                <TicketCountCard
-                  status="pending"
-                  count={ticketsCount.pending}
-                />
-                <TicketCountCard
-                  status="blocked"
-                  count={ticketsCount.blocked}
-                />
-              </div>
-              <hr />
-              <div className="container my-4">
-                <MaterialTable
-                  onRowClick={(event, rowData) => editTicket(rowData)}
-                  columns={[
-                    {
-                      title: "Ticket ID",
-                      field: "id",
-                    },
-                    {
-                      title: "TITLE",
-                      field: "title",
-                    },
-                    {
-                      title: "DESCRIPTION",
-                      field: "description",
-                    },
-                    {
-                      title: "REPORTER",
-                      field: "reporter",
-                    },
-                    {
-                      title: "PRIORITY",
-                      field: "ticketPriority",
-                    },
-                    {
-                      title: "Assignee",
-                      field: "assignee",
-                    },
+      <h3
+        className="admin-title text-center"
+        style={{ color: "var(--admin-content-color)" }}
+      >
+        Welcome, {localStorage.getItem("name")}
+      </h3>
+      <p className="admin-sub-title text-center">
+        Take a quick look at your status below
+      </p>
 
-                    {
-                      title: "Status",
-                      field: "status",
-                      lookup: {
-                        OPEN: "OPEN",
-                        BLOCKED: "BLOCKED",
-                        CLOSED: "CLOSED",
-                        IN_PROGRESS: "IN_PROGRESS",
-                      },
-                    },
-                  ]}
-                  options={{
-                    filtering: true,
-                    exportMenu: [
-                      {
-                        label: "Export Pdf",
-                        exportFunc: (cols, datas) =>
-                          ExportPdf(cols, datas, "Ticket Records"),
-                      },
-                      {
-                        label: "Export Csv",
-                        exportFunc: (cols, datas) =>
-                          ExportCsv(cols, datas, "Ticket Records"),
-                      },
-                    ],
-                    headerStyle: {
-                      backgroundColor: "darkblue",
-                      color: "#fff",
-                    },
-                    rowStyle: {
-                      backgroundColor: "lightgray",
-                    },
-                  }}
-                  data={ticketList}
-                  title="TICKET RECORDS"
-                />
-              </div>
-              <div className="container mb-4">
-                <MaterialTable
-                  onRowClick={(event, rowData) => updateUser(event, rowData)}
-                  columns={[
-                    {
-                      title: "NAME",
-                      field: "name",
-                    },
-                    {
-                      title: "USER ID",
-                      field: "userId",
-                    },
-                    {
-                      title: "EMAIL",
-                      field: "email",
-                    },
-                    {
-                      title: "USER TYPES",
-                      field: "userTypes",
-                    },
-                    {
-                      title: "USER STATUS",
-                      field: "userStatus",
-                    },
-                  ]}
-                  options={{
-                    exportMenu: [
-                      {
-                        label: "Export Pdf",
-                        exportFunc: (cols, datas) =>
-                          ExportPdf(cols, datas, "User Records"),
-                      },
-                      {
-                        label: "Export Csv",
-                        exportFunc: (cols, datas) =>
-                          ExportCsv(cols, datas, "User Records"),
-                      },
-                    ],
-                    headerStyle: {
-                      backgroundColor: "darkblue",
-                      color: "#fff",
-                    },
-                    rowStyle: {
-                      backgroundColor: "lightgray",
-                    },
-                  }}
-                  data={allUserDetails}
-                  title="USER RECORDS"
-                />
-              </div>
-              <Modal
-                show={ticketModal}
-                onHide={onCloseTicketModal}
-                backdrop="static"
-                centered
-              >
-                <Modal.Header closeButton>
-                  <Modal.Title>Edit Details</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  <form>
-                    <div className="p-1">
-                      <div className="input-group">
-                        <label className="input-group-text">
-                          Ticket ID:{selectedCurrTicket.id}
-                        </label>
-                      </div>
-                      <div className="input-group">
-                        <label className="input-group-text">
-                          Title
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="title"
-                            value={selectedCurrTicket.title}
-                            onChange={onTicketUpdate}
-                          />
-                        </label>
-                      </div>
-                      <div className="input-group">
-                        <label className="input-group-text">
-                          Description
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="description"
-                            value={selectedCurrTicket.description}
-                            onChange={onTicketUpdate}
-                          />
-                        </label>
-                      </div>
-                      <div className="input-group">
-                        <label className="input-group-text">
-                          Reporter
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="reporter"
-                            value={selectedCurrTicket.reporter}
-                            onChange={onTicketUpdate}
-                          />
-                        </label>
-                      </div>
-                      <div className="input-group">
-                        <label className="input-group-text">
-                          Priority
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="ticketPriority"
-                            value={selectedCurrTicket.ticketPriority}
-                            onChange={onTicketUpdate}
-                          />
-                        </label>
-                      </div>
-                      <div className="input-group">
-                        <label className="input-group-text">
-                          Assignee
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="assignee"
-                            value={selectedCurrTicket.assignee}
-                            onChange={onTicketUpdate}
-                          />
-                        </label>
-                      </div>
-                      <div className="input-group">
-                        <label className="input-group-text">
-                          Status
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="status"
-                            value={selectedCurrTicket.status}
-                            onChange={onTicketUpdate}
-                          />
-                        </label>
-                      </div>
-                    </div>
-                  </form>
-                  <button className="btn btn-primary" onClick={updateTicket}>
-                    Save Changes
-                  </button>
-                </Modal.Body>
-              </Modal>
-            </div>
+      {/* STATS CARDS START HERE */}
+
+      {/* ticket records */}
+
+      <div className="records" ref={ticketRecordRef}>
+        <h4
+          className="records-title"
+          style={{ background: "var(--admin-content-bg-gradient)" }}
+        >
+          <span className="records-title-ring"></span>
+          <span>ticket records</span>
+          <span className="records-title-ring"></span>
+        </h4>
+        <div className="records-stats">
+          <TicketTable
+            editTicket={editTicket}
+            ticketList={{
+              all: allTicket,
+              open: openTicket,
+              closed: closedTicket,
+              pending: pendingTicket,
+              blocked: blockedTicket,
+            }}
+            admin
+          />
+          <div className="ticket-stats">
+            <TicketCountCard
+              status="open"
+              title="open"
+              count={ticketsCount.open}
+              totalCount={ticketsCount.all}
+            />
+            <TicketCountCard
+              status="closed"
+              title="closed"
+              count={ticketsCount.closed}
+              totalCount={ticketsCount.all}
+            />
+            <TicketCountCard
+              status="pending"
+              title="pending"
+              count={ticketsCount.pending}
+              totalCount={ticketsCount.all}
+            />
+            <TicketCountCard
+              status="blocked"
+              title="blocked"
+              count={ticketsCount.blocked}
+              totalCount={ticketsCount.all}
+            />
           </div>
         </div>
       </div>
+
+      <div className="records" ref={userRecordRef}>
+        <h4
+          className="records-title"
+          style={{ background: "var(--admin-content-bg-gradient)" }}
+        >
+          <span className="records-title-ring"></span>
+          <span>user records</span>
+          <span className="records-title-ring"></span>
+        </h4>
+        <div className="records-stats">
+          <UserTable
+            fetchUsers={fetchUsers}
+            userList={{
+              all: allUser,
+              approved: approvedUser,
+              pending: pendingUser,
+              rejected: rejectedUser,
+            }}
+            userRecordRef={userRecordRef}
+          />
+          <div className="ticket-stats">
+            <TicketCountCard
+              status="closed"
+              title="approved"
+              count={usersCount.approved}
+              totalCount={usersCount.all}
+            />
+            <TicketCountCard
+              status="pending"
+              title="pending"
+              count={usersCount.pending}
+              totalCount={usersCount.all}
+            />
+            <TicketCountCard
+              status="blocked"
+              title="rejected"
+              count={usersCount.rejected}
+              totalCount={usersCount.all}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/*  ticket modal */}
+      <TicketModal
+        ticketModal={ticketModal}
+        onCloseTicketModal={onCloseTicketModal}
+        selectedCurrTicket={selectedCurrTicket}
+        onTicketUpdate={onTicketUpdate}
+        allUser={allUser}
+        updateTicket={updateTicket}
+        admin
+      />
+      {/* user modal */}
+      <UserModal
+        userModal={userModal}
+        onCloseUserModal={onCloseUserModal}
+        updateUser={updateUser}
+        userDetail={userDetail}
+        changeUserDetail={changeUserDetail}
+      />
     </div>
   );
 };

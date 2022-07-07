@@ -1,15 +1,18 @@
 import React from "react";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
+import Card from "./UI/Card";
+import "../styles/TicketCountCard.css";
+import { Paper } from "@material-ui/core";
 
-const TicketCountCard = ({ status, count }) => {
+const TicketCountCard = ({ status, title, count, totalCount }) => {
   const CardClasses =
     status === "open"
-      ? "bg-primary text-primary"
+      ? "open-ticket"
       : status === "closed"
-      ? "bg-success text-success"
+      ? "success-ticket"
       : status === "pending"
-      ? "bg-warning text-warning"
-      : "bg-danger text-danger";
+      ? "pending-ticket"
+      : "blocked-ticket";
   const IconClasses =
     status === "open"
       ? "text-primary"
@@ -24,50 +27,53 @@ const TicketCountCard = ({ status, count }) => {
       status === "open"
         ? "blue"
         : status === "closed"
-        ? "green"
+        ? "lime"
         : status === "pending"
         ? "orange"
         : "red",
   };
   const BordetBottom = {
-    borderBottom: "4px solid",
-    borderColor:
-      status === "open"
-        ? "#321FDB"
-        : status === "closed"
-        ? "#2EB85C"
-        : status === "pending"
-        ? "#F9B115"
-        : "#E55353",
-    borderRadius: "5px",
+    // borderBottom: "4px solid",
+    // borderColor:
+    //   status === "open"
+    //     ? "#321FDB"
+    //     : status === "closed"
+    //     ? "#2EB85C"
+    //     : status === "pending"
+    //     ? "#F9B115"
+    //     : "#E55353",
+    // borderRadius: "5px",
+  };
+  const CommonStyles = {
+    width: "120px",
+    height: "160px",
+    boxShadow: "0px 5px 10px rgba(0,0,0,.4),0px -2px 10px rgba(0,0,0,.2)",
+    cursor: "pointer",
   };
 
   return (
-    <div className="col">
-      <div
-        className={`card shadow ${CardClasses}  bg-opacity-25 transform-scale text-primary`}
-        style={{ width: 12 + "rem" }}
-      >
-        <div className="card-body" style={BordetBottom}>
-          <h5 className="card-subtitle text-uppercase">
-            <i className={`bi bi-pen ${IconClasses} text-primary mx-2`}></i>
-            {status}
-          </h5>
-          <hr />
-          <div className="row">
-            <div className="col">{count}</div>
-            <div className="col">
-              <div style={{ height: "20px", width: "20px" }}>
-                <CircularProgressbar
-                  value={count}
-                  styles={buildStyles(CircularProgressbarStyle)}
-                />
-              </div>
+    <Card
+      className={`${CardClasses} stats-wrapper`}
+      CommonStyles={CommonStyles}
+    >
+      <div className="card-content" style={BordetBottom}>
+        <h5 className="card-title">{title}</h5>
+
+        <div className="card-stats">
+          <div className="count">{count}</div>
+          <div className="progress-bar-wrapper">
+            <div style={{ height: "40px", width: "40px" }}>
+              <CircularProgressbar
+                value={count}
+                maxValue={totalCount}
+                styles={buildStyles(CircularProgressbarStyle)}
+              />
             </div>
           </div>
         </div>
       </div>
-    </div>
+      {/* </div> */}
+    </Card>
   );
 };
 

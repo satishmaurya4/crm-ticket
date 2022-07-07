@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import not from '../assets/403s.svg'
-
+import {Button} from "@mui/material"
 
 const Unauthorized = () => {
     const navigate = useNavigate();
@@ -8,15 +8,14 @@ const Unauthorized = () => {
     const goBack = () => navigate(-1);
 
     return (
-        <section className="bg-light vh-100 d-flex justify-content-center align-items-center text-center">
-         <div>
+        <section style={{backgroundColor: 'var(--admin-bg-color)', height: '100vh'}}>
+         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <h1>Unauthorized Access</h1>
-<img src={not} alt=""/>
+<img src={not} alt="" style={{width: '280px', height: '400px'}}/>
             <br />
             <p>You do not have access to the requested page.</p>
-            <div className="flex-row">
-                <button className="btn btn-primary" onClick={goBack}>Go Back</button>
-            </div>
+          
+                <Button  onClick={goBack}>Go Back</Button>
             </div>
         </section>
        

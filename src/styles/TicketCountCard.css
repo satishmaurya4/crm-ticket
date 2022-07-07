@@ -1,0 +1,38 @@
+.card-content {
+  display: flex;
+  flex-direction: column;
+  height: 160px;
+  justify-content: space-between;
+}
+.card-title {
+  color: #fff;
+  text-transform: uppercase;
+}
+.card-stats {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+  font-size: 18px;
+}
+.stats-wrapper{
+  transition: all 1s ease-in-out;
+}
+.stats-wrapper:hover{
+  transform: scale(1.1);
+
+}
+
+.open-ticket {
+  background: var(--open-ticket-bg-gradient);
+}
+.success-ticket {
+  background: var(--success-ticket-bg-gradient);
+}
+.pending-ticket {
+  background: var(--pending-ticket-bg-gradient);
+}
+.blocked-ticket {
+  background: var(--blocked-ticket-bg-gradient);
+}

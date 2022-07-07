@@ -1,6 +1,7 @@
-import { useNavigate } from "react-router-dom";
-import not from '../assets/404s.svg'
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@mui/material";
+import not from '../assets/404s.svg'
 
 function NotFound() {
   const navigate = useNavigate();
@@ -8,17 +9,16 @@ function NotFound() {
   const goBack = () => navigate(-1);
 
   return (
-      <section className="bg-light vh-100 d-flex justify-content-center align-items-center text-center">
-       <div>
-          <h1>Not Found</h1>
-<img src={not} alt=""/>
-          <br />
-          <p>Page is not available.</p>
-          <div className="flex-row">
-              <button className="btn btn-primary" onClick={goBack}>Go Back</button>
-          </div>
-          </div>
-      </section>
+    <section style={{backgroundColor: 'var(--admin-bg-color)', height: '100vh'}}>
+    <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+       <h1>Page not found.</h1>
+<img src={not} alt="" style={{width: '280px', height: '400px'}}/>
+       <br />
+       <p>Page doesn't exist.</p>
+     
+           <Button  onClick={goBack}>Go Back</Button>
+       </div>
+   </section>
   )
 }
 
