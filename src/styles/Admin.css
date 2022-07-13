@@ -1,17 +1,10 @@
-/* .admin-container {
-  background-color: var(--admin-bg-color);
-  padding: 20px 0;
-} */
 .admin-title {
   color: var(--admin-content-color);
 }
 
-
-
 .records-title {
   text-transform: uppercase;
   margin-bottom: 10px;
-  /* margin: auto; */
   margin-bottom: 20px;
   width: max-content;
   position: relative;
@@ -42,30 +35,25 @@
   transform: translateY(-50%);
 }
 
-
-.admin-input{
+.admin-input {
   box-shadow: 0 0 2px var(--admin-content-color) !important;
-
 }
-.input:focus{
+.input:focus {
   border-bottom: 2px solid var(--admin-content-color) !important;
-
 }
-.admin-input-icon{
+.admin-input-icon {
   background-color: var(--admin-content-color) !important;
 }
 
-.admin-id{
+.admin-id {
   background-color: var(--admin-content-color);
   color: #fff;
   padding: 5px 10px;
 }
 
-.admin-select-wrapper{
- flex-direction: row !important;
-justify-content: space-between;
-align-items: center; 
-padding: 5px 10px;
-
+.admin-select-wrapper {
+  flex-direction: row !important;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 10px;
 }
-

@@ -2,7 +2,6 @@ import React from "react";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 import Card from "./UI/Card";
 import "../styles/TicketCountCard.css";
-import { Paper } from "@material-ui/core";
 
 const TicketCountCard = ({ status, title, count, totalCount }) => {
   const CardClasses =
@@ -13,14 +12,6 @@ const TicketCountCard = ({ status, title, count, totalCount }) => {
       : status === "pending"
       ? "pending-ticket"
       : "blocked-ticket";
-  const IconClasses =
-    status === "open"
-      ? "text-primary"
-      : status === "closed"
-      ? "text-success"
-      : status === "pending"
-      ? "text-warning"
-      : "text-danger";
   const CircularProgressbarStyle = {
     trailColor: "#fff",
     pathColor:
@@ -31,18 +22,6 @@ const TicketCountCard = ({ status, title, count, totalCount }) => {
         : status === "pending"
         ? "orange"
         : "red",
-  };
-  const BordetBottom = {
-    // borderBottom: "4px solid",
-    // borderColor:
-    //   status === "open"
-    //     ? "#321FDB"
-    //     : status === "closed"
-    //     ? "#2EB85C"
-    //     : status === "pending"
-    //     ? "#F9B115"
-    //     : "#E55353",
-    // borderRadius: "5px",
   };
   const CommonStyles = {
     width: "120px",
@@ -56,7 +35,7 @@ const TicketCountCard = ({ status, title, count, totalCount }) => {
       className={`${CardClasses} stats-wrapper`}
       CommonStyles={CommonStyles}
     >
-      <div className="card-content" style={BordetBottom}>
+      <div className="card-content">
         <h5 className="card-title">{title}</h5>
 
         <div className="card-stats">
@@ -72,7 +51,6 @@ const TicketCountCard = ({ status, title, count, totalCount }) => {
           </div>
         </div>
       </div>
-      {/* </div> */}
     </Card>
   );
 };

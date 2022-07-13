@@ -36,45 +36,45 @@ const Sidebar = ({ sidebarStyle:{bg,logo}, ticketRef, goToUserRecord, admin }) =
     <div className="sidebar" style={bg}>
       <div className="sidebar-logo" style={logo}>
         <span className="icon">
-          <i class="bi bi-bricks"></i>
+          <i className="bi bi-bricks"></i>
         </span>
         <span>Bricks</span>
       </div>
       <ul>
-        <li class="list active">
+        <li className="list active">
           <div className="sidebar-item">
-            <span class="icon">
-              <i class="bi bi-speedometer2"></i>
+            <span className="icon">
+              <i className="bi bi-speedometer2"></i>
             </span>
-            <span class="title">Dashboard</span>
+            <span className="title">Dashboard</span>
           </div>
         </li>
-        <li class="list">
+        <li className="list">
           <div className="sidebar-item" onClick={()=>goToTicketRecord(ticketRef)}>
-            <span class="icon">
-              <i class="bi bi-ticket-detailed"></i>
+            <span className="icon">
+              <i className="bi bi-ticket-detailed"></i>
             </span>
-            <span class="title">Ticket Records</span>
+            <span className="title">Ticket Records</span>
           </div>
         </li>
         {
           admin && 
        
-        <li class="list">
+        <li className="list">
           <div className="sidebar-item" onClick={goToUserRecord}>
-            <span class="icon">
-              <i class="bi bi-person"></i>
+            <span className="icon">
+              <i className="bi bi-person"></i>
             </span>
-            <span class="title">User Records</span>
+            <span className="title">User Records</span>
           </div>
         </li>
              }
-        <li class="list">
+        <li className="list">
           <div className="sidebar-item" onClick={logout}>
-            <span class="icon">
-              <i class="bi bi-door-closed"></i>
+            <span className="icon">
+              <i className="bi bi-door-closed"></i>
             </span>
-            <span class="title">Logout</span>
+            <span className="title">Logout</span>
           </div>
         </li>
       </ul>

@@ -1,9 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import MaterialTable from "@material-table/core";
-import { ExportCsv, ExportPdf } from "@material-table/exporters";
-// import { Modal } from "react-bootstrap";
 import { fetchTickets, ticketCreation, ticketUpdation } from "../api/tickets";
 import TicketTable from "../components/TicketTable";
 import TicketCountCard from "../components/TicketCountCard";
@@ -20,25 +16,6 @@ import {
   MenuItem,
 } from "@mui/material";
 import { logout } from "../utils/logout";
-
-/*
-UI : 
-: Sidebar
-: Cards : react circular progress bar 
-: Material Table : to display all the tickets 
-: Modal : raise a new ticket 
-
-
-
-LOGIC : 
-All state values : 
-: modal : raise ticket, updateTicket
-: ticketDetails : to store all the tickets raised by the user : fetch tickets 
-: ticketCount : segregating the tickets according to their status
-: currTicket : to update the details , edit the tickets
-
-
-*/
 
 const style = {
   position: "absolute",
@@ -82,7 +59,6 @@ function Customer() {
     fetchTickets()
       .then(function (response) {
         const data = response.data;
-        // console.log(response.data);
         const getOpenTicket = response.data.filter((ticket) => {
           return ticket.status === "OPEN";
         });
@@ -103,7 +79,6 @@ function Customer() {
         updateTicketCount(data);
       })
       .catch(function (error) {
-        console.log(error.message);
         setMessage(error.message);
       });
   };
@@ -116,13 +91,11 @@ function Customer() {
     };
     ticketCreation(data)
       .then(function (response) {
-        console.log(response.data);
         setMessage("Ticket updated successfully");
         closeCreateTicketModal();
         fetchTicket();
       })
       .catch((error) => {
-        console.log(error.message);
         setMessage(error.message);
       });
   };
@@ -165,8 +138,6 @@ function Customer() {
       .catch(function (error) {
         if (error.response.status === 400) setMessage(error.message);
         else if (error.response.status === 401) logout();
-
-        console.log(error.message);
       });
   };
 
@@ -273,7 +244,7 @@ function Customer() {
 
         <Button
           variant="contained"
-          startIcon={<i class="bi bi-plus-circle-dotted"></i>}
+          startIcon={<i className="bi bi-plus-circle-dotted"></i>}
           color="info"
           className="create-ticket-btn"
           onClick={showCreateTicketModal}

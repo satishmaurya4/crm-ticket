@@ -19,7 +19,8 @@ const Admin = () => {
   const [blockedTicket, setBlockedTicket] = useState([]);
   const [selectedCurrTicket, setSelectedCurrTicket] = useState({});
   const [selectedCurrTicketStatus, setSelectedCurrTicketStatus] = useState("");
-  const [selectedCurrTicketAssignee, setSelectedCurrTicketAssignee] = useState("");
+  const [selectedCurrTicketAssignee, setSelectedCurrTicketAssignee] =
+    useState("");
   const [ticketsCount, setTicketsCount] = useState({});
 
   const [userModal, setUserModal] = useState(false);
@@ -34,14 +35,12 @@ const Admin = () => {
 
   const ticketRecordRef = useRef();
   const userRecordRef = useRef();
-  const {mode} = Consume();
+  const { mode } = Consume();
 
   const fetchTicket = () => {
     fetchTickets()
       .then(function (response) {
         if (response.status === 200) {
-          console.log(response);
-
           const getOpenTicket = response.data.filter((ticket) => {
             return ticket.status === "OPEN";
           });
@@ -66,7 +65,6 @@ const Admin = () => {
         if (error.response.status === 401) {
           logout();
         }
-        console.log(error);
       });
   };
 
@@ -85,8 +83,6 @@ const Admin = () => {
   };
 
   const onTicketUpdate = (e) => {
-    console.log("target: " + e.target);
-    console.log("id", e.target.id);
     if (e.target.id === "title") {
       selectedCurrTicket.title = e.target.value;
     } else if (e.target.id === "description") {
@@ -96,7 +92,6 @@ const Admin = () => {
     } else if (e.target.id === "ticketPriority") {
       selectedCurrTicket.ticketPriority = e.target.value;
     } else if (e.target.id === "status") {
-      console.log("status: " + e.target.value);
       selectedCurrTicket.status = e.target.value;
     } else if (e.target.id === "assignee") {
       selectedCurrTicket.assignee = e.target.value;
@@ -113,7 +108,6 @@ const Admin = () => {
       status: selectedCurrTicketStatus,
       assignee: selectedCurrTicketAssignee,
     };
-    console.log("upadted data", updatedData);
     ticketUpdation(selectedCurrTicket.id, updatedData)
       .then(function (response) {
         fetchTicket();
@@ -122,7 +116,7 @@ const Admin = () => {
       .catch(function (error) {
         if (error.response.status === 400) setMessage(error.message);
         else if (error.response.status === 401) logout();
-        else console.log(error);
+        else setMessage(error.message);
       });
   };
 
@@ -157,7 +151,7 @@ const Admin = () => {
           break;
 
         default:
-          console.log("This is default case");
+          return;
       }
     });
     setTicketsCount(data);
@@ -189,9 +183,7 @@ const Admin = () => {
           }
         }
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => {});
   };
 
   const showUserModal = () => {
@@ -215,9 +207,9 @@ const Admin = () => {
         }
       })
       .catch((err) => {
-        if (err.status === 400) console.log(err.message);
+        if (err.status === 400) setMessage(err.message);
         else if (err.response.status === 401) logout();
-        else console.log(err);
+        else setMessage(err.message);
       });
   };
 
@@ -280,7 +272,11 @@ const Admin = () => {
   }, []);
 
   return (
-    <div className={`${mode === "dark" ? "darkModeBg page-container" : "page-container"}`}>
+    <div
+      className={`${
+        mode === "dark" ? "darkModeBg page-container" : "page-container"
+      }`}
+    >
       <Sidebar
         sidebarStyle={sidebarStyle}
         ticketRef={ticketRecordRef}
@@ -297,10 +293,6 @@ const Admin = () => {
       <p className="admin-sub-title text-center">
         Take a quick look at your status below
       </p>
-
-      {/* STATS CARDS START HERE */}
-
-      {/* ticket records */}
 
       <div className="records" ref={ticketRecordRef}>
         <h4
@@ -394,8 +386,6 @@ const Admin = () => {
           </div>
         </div>
       </div>
-
-      {/*  ticket modal */}
       <TicketModal
         ticketModal={ticketModal}
         onCloseTicketModal={onCloseTicketModal}
@@ -409,7 +399,6 @@ const Admin = () => {
         setSelectedCurrTicketAssignee={setSelectedCurrTicketAssignee}
         admin
       />
-      {/* user modal */}
       <UserModal
         userModal={userModal}
         onCloseUserModal={onCloseUserModal}

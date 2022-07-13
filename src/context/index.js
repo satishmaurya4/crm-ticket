@@ -1,8 +1,6 @@
 import * as React from 'react';
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext} from "react";
 import {createTheme } from '@mui/material/styles';
-
-import { toast } from "react-toastify";
 
 const AppContext = createContext();
 
@@ -46,7 +44,6 @@ const AppProvider = ({ children }) => {
       }),
     [mode]
     );
-    console.log("mode: " + mode);
   return (
     <AppContext.Provider value={{ colorMode, ModeTheme, mode }}>
       {children}

@@ -69,36 +69,30 @@
 .MuiToolbar-regular {
   padding: 0;
 }
-/* change table alignment above header  */
 .MTableToolbar-root-5 {
   padding: 0px !important;
   justify-content: space-between !important;
 }
 
-/* table search */
 .MTableToolbar-searchField-10 {
   order: 2;
   margin-right: 15px !important;
 }
-
-/* remove table default space div */
 .MTableToolbar-spacer-7 {
   display: none !important;
 }
 
-/* change table row bg color on hover */
 .MuiTableRow-root:hover {
   background-color: var(--admin-bg-color) !important;
 }
 
-/* change table header text color on hover */
 .MuiTableSortLabel-root:hover {
   color: #000 !important;
 }
 .MuiToolbar-gutters {
   padding: 0;
 }
-/* table downloade option */
+
 .MTableToolbar-actions-8 {
   order: 1 !important;
 }
@@ -112,7 +106,6 @@
   padding: 0px !important;
 }
 
-/* change active tab color */
 .engTab.css-1dloqka-MuiButtonBase-root-MuiTab-root.Mui-selected{
   color: var(--engineer-content-color) !important;
 }
@@ -129,7 +122,7 @@
 .cx-Table .MTableHeader-header-14{
   background-color: var(--customer-content-color) !important;
 }
-/* change select label color */
+
 .admin-select .css-lh7n6p-MuiFormLabel-root-MuiInputLabel-root.Mui-focused{
   color: var(--admin-content-color) !important;
 }
@@ -163,7 +156,6 @@ border: 2px solid var(--admin-content-color) !important;
 outline: none;
 border: 2px solid var(--engineer-content-color) !important;
 }
-/* change select option background color */
 .admin-menuItem.css-n9b33d-MuiButtonBase-root-MuiMenuItem-root.Mui-selected{
 background-color: var( --admin-tab-bg-color) !important;
 }

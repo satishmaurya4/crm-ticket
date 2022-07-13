@@ -19,6 +19,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Consume } from "../context";
+import { logout } from "../utils/logout";
 
 const Login = () => {
   const [showSignup, setShowSignup] = useState(false);
@@ -72,7 +73,6 @@ const Login = () => {
 
   const userSignupDataSubmitHandler = (e) => {
     e.preventDefault();
-    console.log(userType);
     setIsLoading(true);
     const data = {
       ...userSignupData,
@@ -80,25 +80,20 @@ const Login = () => {
     };
     userSignup(data)
       .then(function (response) {
-        console.log("response", response);
         setShowAccountAnimation(true);
         setIsLoading(false);
         if (response.status === 201) {
-          // setShowAccountAnimation(false);
           registered();
         }
       })
       .catch(function (error) {
         setIsLoading(false);
         if (error.response.status === 400) {
-          // setErrorMessage(error.response.data.message);
           setApiMessage({
             status: "error",
             title: "error",
             message: error.response.data.message,
           });
-          console.log(error.response.data.message);
-          console.log("got 400");
         } else {
           setApiMessage({
             status: "error",
@@ -118,21 +113,18 @@ const Login = () => {
       userId,
       password,
     };
-    console.log("data", data);
     userSignin(data)
       .then(function (response) {
         setIsLoading(false);
         if (response.data.message) {
-          console.log("user sigin in response data message", response);
         } else {
-          console.log("sigin response", response.data);
+      
           localStorage.setItem("name", response.data.name);
           localStorage.setItem("userId", response.data.userId);
           localStorage.setItem("email", response.data.email);
           localStorage.setItem("userTypes", response.data.userTypes);
           localStorage.setItem("userStatus", response.data.userStatus);
           localStorage.setItem("token", response.data.accessToken);
-          console.log("response usertype", response.data.userTypes);
           if (response.data.userTypes === "CUSTOMER") {
             navigate("/customer");
           } else if (response.data.userTypes === "ENGINEER") {
@@ -151,11 +143,7 @@ const Login = () => {
             message: error.response.data.message,
           });
         } else {
-          // setApiMessage({
-          //   status: "error",
-          //   title: "error",
-          //   message: error.response.data.message,
-          // });
+          logout();
         }
       });
   };
@@ -205,9 +193,6 @@ const Login = () => {
       {apiMessage && <Toast info={apiMessage} />}
 
       <div className="login-content-wrapper">
-        {/* {
-          apiMessage && <div>{apiMessage}</div>
-        } */}
         <Typography
           variant="h2"
           color="primary"
@@ -241,7 +226,6 @@ const Login = () => {
                   id="userId"
                   label="User ID"
                   variant="outlined"
-                  // value={userSigninData.userId}
                   onChange={userSigninDataHandler}
                   className="login-input"
                 />
@@ -264,9 +248,6 @@ const Login = () => {
                 >
                   Don't have an account. Signup!
                 </Typography>
-                {/* {signInErrorMessage && (
-              <p className="text-danger">{signInErrorMessage}</p>
-            )} */}
               </form>
             </Paper>
           ) : (
@@ -286,28 +267,27 @@ const Login = () => {
                     id="userId"
                     label="User ID"
                     variant="outlined"
-                    // value={userSignupData.userId}
+  
                     onChange={userSignupDataHandler}
                   />
                   <TextField
                     id="name"
                     label="Username"
                     variant="outlined"
-                    // value={userSignupData.name}
                     onChange={userSignupDataHandler}
                   />
                   <TextField
                     id="email"
                     label="Email"
                     variant="outlined"
-                    // value={userSignupData.email}
+
                     onChange={userSignupDataHandler}
                   />
                   <TextField
                     id="password"
                     label="Password"
                     variant="outlined"
-                    // value={userSignupData.password}
+      
                     onChange={userSignupDataHandler}
                   />
                   <FormControl sx={{ width: "100%" }}>

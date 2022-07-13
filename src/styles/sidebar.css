@@ -5,7 +5,6 @@
     width: 50px;
     height: 100vh;
     box-sizing: initial;
-    /* background-color: var(--admin-content-color); */
     transition: width 0.4s;
     overflow: hidden;
     z-index: 999;
@@ -75,7 +74,4 @@
     border-left: 3px solid #fff;
     border-top-right-radius: 10px;
   }
-  /* .sidebar ul li.active .sidebar-item {
-    color: ;
-  } */
   

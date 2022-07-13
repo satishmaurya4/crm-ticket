@@ -1,7 +1,7 @@
 .card{
- border-radius: 8px;
- padding: 8px;  
- border: none !important;
- width: max-content;
- height: max-content;
-}
+    border-radius: 8px;
+    padding: 8px;  
+    border: none !important;
+    width: max-content;
+    height: max-content;
+   }

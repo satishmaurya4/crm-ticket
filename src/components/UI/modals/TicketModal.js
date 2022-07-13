@@ -38,9 +38,8 @@ const TicketModal = ({
   selectedCurrTicketAssignee,
   setSelectedCurrTicketAssignee,
   admin,
-  engineer
+  engineer,
 }) => {
-  console.log("selected curr ticket", selectedCurrTicket)
   return (
     <Modal
       open={ticketModal}
@@ -66,19 +65,16 @@ const TicketModal = ({
             onChange={onTicketUpdate}
             color={admin ? "secondary" : "warning"}
           />
-          {
-            admin && (
-
-              <TextField
-                id="reporter"
-                label="Reporter"
-                variant="outlined"
-                value={selectedCurrTicket.reporter}
-                onChange={onTicketUpdate}
-                color={admin ? "secondary" : "warning"}
-              />
-            )
-          }
+          {admin && (
+            <TextField
+              id="reporter"
+              label="Reporter"
+              variant="outlined"
+              value={selectedCurrTicket.reporter}
+              onChange={onTicketUpdate}
+              color={admin ? "secondary" : "warning"}
+            />
+          )}
           <TextField
             id="ticketPriority"
             label="Priority"
@@ -87,25 +83,30 @@ const TicketModal = ({
             onChange={onTicketUpdate}
             color={admin ? "secondary" : "warning"}
           />
-          { admin && 
-          <FormControl sx={{width: "100%" }} className={admin ? 'admin-select' : 'eng-select'}>
-            <InputLabel id="demo-simple-select-helper-label">
-              Assignee
-            </InputLabel>
-            <Select
+          {admin && (
+            <FormControl
+              sx={{ width: "100%" }}
+              className={admin ? "admin-select" : "eng-select"}
+            >
+              <InputLabel id="demo-simple-select-helper-label">
+                Assignee
+              </InputLabel>
+              <Select
                 labelId="demo-simple-select-helper-label"
                 id="assignee"
                 value={selectedCurrTicketAssignee}
                 label="Assignee"
-                onChange={(event) => setSelectedCurrTicketAssignee(event.target.value)}
+                onChange={(event) =>
+                  setSelectedCurrTicketAssignee(event.target.value)
+                }
                 color={admin ? "secondary" : "warning"}
               >
-                {allUser.map((user) => {
+                {allUser.map((user, i) => {
                   if (user.userTypes === "ENGINEER") {
                     return (
                       <MenuItem
                         value={user.name}
-                        key={user.id}
+                        key={i}
                         textColor="secondary"
                       >
                         {user.name}
@@ -115,38 +116,61 @@ const TicketModal = ({
                 })}
               </Select>
             </FormControl>
-          }
-          {engineer && <TextField
-            id="assignee"
-            label="Assignee"
-            variant="outlined"
-            value={selectedCurrTicket.assignee}
-            onChange={onTicketUpdate}
-            color={admin ? "secondary" : "warning"}
-            InputProps={{
-              readOnly: true,
-            }}
-          />
-          }
+          )}
+          {engineer && (
+            <TextField
+              id="assignee"
+              label="Assignee"
+              variant="outlined"
+              value={selectedCurrTicket.assignee}
+              onChange={onTicketUpdate}
+              color={admin ? "secondary" : "warning"}
+              InputProps={{
+                readOnly: true,
+              }}
+            />
+          )}
 
-          <FormControl sx={{ width: "100%" }} className={admin ? 'admin-select' : 'eng-select'}>
-            <InputLabel id="demo-simple-select-helper-label">
-              Status
-            </InputLabel>
+          <FormControl
+            sx={{ width: "100%" }}
+            className={admin ? "admin-select" : "eng-select"}
+          >
+            <InputLabel id="demo-simple-select-helper-label">Status</InputLabel>
             <Select
               labelId="demo-simple-select-helper-label"
               id="status"
               value={selectedCurrTicketStatus}
               label="Status"
-              onChange={(event) => setSelectedCurrTicketStatus(event.target.value)} 
+              onChange={(event) =>
+                setSelectedCurrTicketStatus(event.target.value)
+              }
               color={admin ? "secondary" : "warning"}
-              style={{ width: '100%' }}
-              
+              style={{ width: "100%" }}
             >
-              <MenuItem value="OPEN" className={admin ? 'admin-menuItem': 'eng-menuItem'}>OPEN</MenuItem>
-              <MenuItem value="CLOSED" className={admin ? 'admin-menuItem': 'eng-menuItem'}>CLOSED</MenuItem>
-              <MenuItem value="IN_PROGRESS" className={admin ? 'admin-menuItem': 'eng-menuItem'}>IN_PROGRESS</MenuItem>
-              <MenuItem value="BLOCKED" className={admin ? 'admin-menuItem': 'eng-menuItem'}>BLOCKED</MenuItem>
+              <MenuItem
+                value="OPEN"
+                className={admin ? "admin-menuItem" : "eng-menuItem"}
+              >
+                OPEN
+              </MenuItem>
+              <MenuItem
+                value="CLOSED"
+                className={admin ? "admin-menuItem" : "eng-menuItem"}
+              >
+                CLOSED
+              </MenuItem>
+              <MenuItem
+                value="IN_PROGRESS"
+                className={admin ? "admin-menuItem" : "eng-menuItem"}
+              >
+                IN_PROGRESS
+              </MenuItem>
+              <MenuItem
+                value="BLOCKED"
+                className={admin ? "admin-menuItem" : "eng-menuItem"}
+              >
+                BLOCKED
+              </MenuItem>
             </Select>
           </FormControl>
           <TextareaAutosize
@@ -156,18 +180,14 @@ const TicketModal = ({
             placeholder="Description..."
             defaultValue={selectedCurrTicket.description}
             onChange={onTicketUpdate}
-            style={{ width: "100%", borderRadius: "10px", padding: "5px", border: '2px solid lightgray' }}
-          
-            className={admin ? 'admin-textarea' : 'eng-textarea'}
+            style={{
+              width: "100%",
+              borderRadius: "10px",
+              padding: "5px",
+              border: "2px solid lightgray",
+            }}
+            className={admin ? "admin-textarea" : "eng-textarea"}
           />
-          {/* <TextField
-            id="description"
-            label="Description"
-            variant="outlined"
-            value={selectedCurrTicket.description}
-            onChange={onTicketUpdate}
-            color="secondary"
-          /> */}
           <Box
             sx={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}
           >
