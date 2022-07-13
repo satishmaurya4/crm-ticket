@@ -119,10 +119,14 @@
 .cxTab.css-1dloqka-MuiButtonBase-root-MuiTab-root.Mui-selected{
   color: var(--customer-content-color) !important;
 }
-.engTable.MTableHeader-header-14{
+
+.admin-Table .MTableHeader-header-14{
   background-color: red !important;
 }
-.cxTable.MTableHeader-header-14{
+.eng-Table .MTableHeader-header-14{
+  background-color: red !important;
+}
+.cx-Table .MTableHeader-header-14{
   background-color: var(--customer-content-color) !important;
 }
 /* change select label color */
@@ -169,4 +173,15 @@ background-color: var( --engineer-tab-bg-color) !important;
 .cx-textarea:focus{
   outline: none;
   border: 2px solid var(--customer-content-color) !important;
+  }
+  .MuiCircularProgress-root{
+    height: 100% !important;
+    width: 24px !important;
+  }
+
+  .darkModeBg{
+    background-color: #000;
+  }
+  .darkModeColor{
+    color: #fff;
   }

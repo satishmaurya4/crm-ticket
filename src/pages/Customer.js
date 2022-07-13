@@ -14,7 +14,12 @@ import {
   Typography,
   TextField,
   TextareaAutosize,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
+import { logout } from "../utils/logout";
 
 /*
 UI : 
@@ -52,8 +57,9 @@ const style = {
 
 function Customer() {
   const [createTicketModal, setCreateTicketModal] = useState(false);
+  const [updateTicketModal, setUpdateTicketModal] = useState(false);
+  const [selectedCurrTicket, setSelectedCurrTicket] = useState({});
   const [message, setMessage] = useState("");
-  const [ticketDetails, setTicketDetails] = useState([]);
   const [allTicket, setAllTicket] = useState([]);
   const [openTicket, setOpenTicket] = useState([]);
   const [closedTicket, setClosedTicket] = useState([]);
@@ -63,9 +69,13 @@ function Customer() {
 
   const ticketRecordRef = useRef();
 
-  const showTicketModal = () => setCreateTicketModal(true);
-  const closeTicketModal = () => {
+  const showCreateTicketModal = () => setCreateTicketModal(true);
+  const closeCreateTicketModal = () => {
     setCreateTicketModal(false);
+  };
+  const showUpdateTicketModal = () => setUpdateTicketModal(true);
+  const closeUpdateTicketModal = () => {
+    setUpdateTicketModal(false);
   };
 
   const fetchTicket = () => {
@@ -108,8 +118,8 @@ function Customer() {
       .then(function (response) {
         console.log(response.data);
         setMessage("Ticket updated successfully");
-        closeTicketModal();
-        fetchTickets();
+        closeCreateTicketModal();
+        fetchTicket();
       })
       .catch((error) => {
         console.log(error.message);
@@ -117,7 +127,48 @@ function Customer() {
       });
   };
 
-  const editTicket = () => {};
+  const editTicket = (ticketDetail) => {
+    const ticket = {
+      assignee: ticketDetail.assignee,
+      description: ticketDetail.description,
+      id: ticketDetail.id,
+      reporter: ticketDetail.reporter,
+      status: ticketDetail.status,
+      title: ticketDetail.title,
+    };
+    setSelectedCurrTicket(ticket);
+    showUpdateTicketModal();
+  };
+
+  const onTicketUpdate = (e) => {
+    if (e.target.name === "title") selectedCurrTicket.title = e.target.value;
+    else if (e.target.name === "description")
+      selectedCurrTicket.description = e.target.value;
+    else if (e.target.name === "status")
+      selectedCurrTicket.status = e.target.value;
+
+    updateSelectedCurrTicket(Object.assign({}, selectedCurrTicket));
+  };
+
+  const updateSelectedCurrTicket = (updatedTicketValue) => {
+    setSelectedCurrTicket(updatedTicketValue);
+  };
+
+  const updateTicket = (e) => {
+    e.preventDefault();
+    ticketUpdation(selectedCurrTicket.id, selectedCurrTicket)
+      .then(function (response) {
+        setMessage("Ticket Updated Successfully");
+        closeUpdateTicketModal();
+        fetchTicket();
+      })
+      .catch(function (error) {
+        if (error.response.status === 400) setMessage(error.message);
+        else if (error.response.status === 401) logout();
+
+        console.log(error.message);
+      });
+  };
 
   const updateTicketCount = (tickets) => {
     const data = {
@@ -225,13 +276,13 @@ function Customer() {
           startIcon={<i class="bi bi-plus-circle-dotted"></i>}
           color="info"
           className="create-ticket-btn"
-          onClick={showTicketModal}
+          onClick={showCreateTicketModal}
         >
           Raise Ticket
         </Button>
 
         {createTicketModal ? (
-          <Modal open={createTicketModal} onClose={closeTicketModal}>
+          <Modal open={createTicketModal} onClose={closeCreateTicketModal}>
             <Box sx={style}>
               <Typography mb={2}>Create Ticket</Typography>
               <form onSubmit={createTicket} className="form">
@@ -252,7 +303,7 @@ function Customer() {
                     width: "100%",
                     borderRadius: "10px",
                     padding: "5px",
-                    border: "2px solid lightgray"
+                    border: "2px solid lightgray",
                   }}
                   className="cx-textarea"
                 />
@@ -266,12 +317,85 @@ function Customer() {
                   <Button
                     variant="outlined"
                     color="info"
-                    onClick={closeTicketModal}
+                    onClick={closeCreateTicketModal}
                   >
                     Cancel
                   </Button>
                   <Button variant="contained" color="info" type="submit">
                     Create
+                  </Button>
+                </Box>
+              </form>
+            </Box>
+          </Modal>
+        ) : (
+          ""
+        )}
+
+        {updateTicketModal ? (
+          <Modal open={updateTicketModal} onClose={closeUpdateTicketModal}>
+            <Box sx={style}>
+              <Typography mb={2}>Update Ticket Details</Typography>
+              <form onSubmit={updateTicket} className="form">
+                <TextField
+                  type="text"
+                  name="title"
+                  value={selectedCurrTicket.title}
+                  onChange={onTicketUpdate}
+                  label="Title"
+                  variant="outlined"
+                  color="info"
+                  sx={{ width: "100%" }}
+                />
+
+                <FormControl sx={{ width: "100%" }}>
+                  <InputLabel id="demo-simple-select-helper-label">
+                    Status
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-helper-label"
+                    name="status"
+                    value={selectedCurrTicket.status}
+                    label="Status"
+                    onChange={onTicketUpdate}
+                    style={{ width: "100%" }}
+                  >
+                    <MenuItem value="OPEN">OPEN</MenuItem>
+                    <MenuItem value="CLOSED">CLOSED</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <TextareaAutosize
+                  maxRows={4}
+                  name="description"
+                  value={selectedCurrTicket.description}
+                  onChange={onTicketUpdate}
+                  aria-label="maximum height"
+                  placeholder="Description"
+                  style={{
+                    width: "100%",
+                    borderRadius: "10px",
+                    padding: "5px",
+                    border: "2px solid lightgray",
+                  }}
+                  className="cx-textarea"
+                />
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: "10px",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    color="info"
+                    onClick={closeUpdateTicketModal}
+                  >
+                    Cancel
+                  </Button>
+                  <Button variant="contained" color="info" type="submit">
+                    Update
                   </Button>
                 </Box>
               </form>

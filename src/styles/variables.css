@@ -1,5 +1,6 @@
 :root {
   --login-bg-color: rgb(190, 242, 239);
+  --login-content-color: rgb(6, 124, 84);
   --admin-bg-color: rgb(233, 233, 233);
   --admin-content-color: rgb(6, 54, 125);
   --engineer-content-color: rgb(176, 73, 5);

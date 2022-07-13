@@ -16,7 +16,7 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 400,
-  height: 520,
+  height: "max-content",
   bgcolor: "background.paper",
   boxShadow: 24,
   borderRadius: "10px",
@@ -31,8 +31,8 @@ const UserModal = ({
   updateUser,
   userDetail,
   changeUserDetail,
+  admin
 }) => {
-  // console.log("##", selectedCurrUser);
   return (
     <Modal open={userModal} onClose={onCloseUserModal}>
       <Box sx={style}>
@@ -58,10 +58,10 @@ const UserModal = ({
             color="secondary"
           />
 
-          <FormControl sx={{ width: "100%" }}>
-            <InputLabel id="demo-simple-select-helper-label">Status</InputLabel>
+          <FormControl sx={{ width: "100%" }} className={admin ? 'admin-select' : 'eng-select'}>
+            <InputLabel id="status">Status</InputLabel>
             <Select
-              labelId="demo-simple-select-helper-label"
+              labelId="status"
               name="status"
               value={userDetail.userStatus}
               label="Status"
@@ -69,29 +69,29 @@ const UserModal = ({
               color="secondary"
               style={{ width: "100%" }}
             >
-              <MenuItem value="OPEN">OPEN</MenuItem>
-              <MenuItem value="CLOSED">CLOSED</MenuItem>
-              <MenuItem value="IN_PROGRESS">IN_PROGRESS</MenuItem>
-              <MenuItem value="BLOCKED">BLOCKED</MenuItem>
+              <MenuItem value="OPEN" className={admin ? 'admin-menuItem': 'eng-menuItem'}>OPEN</MenuItem>
+              <MenuItem value="CLOSED" className={admin ? 'admin-menuItem': 'eng-menuItem'}>CLOSED</MenuItem>
+              <MenuItem value="IN_PROGRESS" className={admin ? 'admin-menuItem': 'eng-menuItem'}>IN_PROGRESS</MenuItem>
+              <MenuItem value="BLOCKED" className={admin ? 'admin-menuItem': 'eng-menuItem'}>BLOCKED</MenuItem>
             </Select>
           </FormControl>
 
-          <FormControl sx={{ width: "100%" }}>
-            <InputLabel id="demo-simple-select-helper-label">
+          <FormControl sx={{ width: "100%" }} className={admin ? 'admin-select' : 'eng-select'}>
+            <InputLabel id="userType">
               User Type
             </InputLabel>
             <Select
-              labelId="demo-simple-select-helper-label"
+              labelId="userType"
               name="type"
               value={userDetail.userTypes}
-              label="Status"
+              label="User Type"
               onChange={changeUserDetail}
               color="secondary"
               style={{ width: "100%" }}
             >
-              <MenuItem value="ADMIN">ADMIN</MenuItem>
-              <MenuItem value="ENGINEER">ENGINEER</MenuItem>
-              <MenuItem value="CUSTOMER">CUSTOMER</MenuItem>
+              <MenuItem value="ADMIN" className={admin ? 'admin-menuItem': 'eng-menuItem'}>ADMIN</MenuItem>
+              <MenuItem value="ENGINEER" className={admin ? 'admin-menuItem': 'eng-menuItem'}>ENGINEER</MenuItem>
+              <MenuItem value="CUSTOMER" className={admin ? 'admin-menuItem': 'eng-menuItem'}>CUSTOMER</MenuItem>
             </Select>
           </FormControl>
           <Box

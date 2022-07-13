@@ -8,31 +8,20 @@ import TicketTable from "../components/TicketTable";
 import UserTable from "../components/UserTable";
 import TicketModal from "../components/UI/modals/TicketModal";
 import UserModal from "../components/UI/modals/UserModal";
-import { goToTicketRecord } from "../utils/goToTicketRecord";
 import { logout } from "../utils/logout";
-// showing some representational data
-// graphs: to show statistic data
-// access : view all the users
-// admin => engineer => approve/decline/assing => change the status
-
-// admin: tickets : view all the tickets
-
-// edit details
-
+import { Consume } from "../context";
 const Admin = () => {
-  // ticket states
   const [ticketModal, setTicketModal] = useState(false);
   const [allTicket, setAllTicket] = useState([]);
   const [openTicket, setOpenTicket] = useState([]);
   const [closedTicket, setClosedTicket] = useState([]);
   const [pendingTicket, setPendingTicket] = useState([]);
   const [blockedTicket, setBlockedTicket] = useState([]);
-
-  const [allUserDetails, setAllUserDetails] = useState([]);
   const [selectedCurrTicket, setSelectedCurrTicket] = useState({});
+  const [selectedCurrTicketStatus, setSelectedCurrTicketStatus] = useState("");
+  const [selectedCurrTicketAssignee, setSelectedCurrTicketAssignee] = useState("");
   const [ticketsCount, setTicketsCount] = useState({});
 
-  // user states
   const [userModal, setUserModal] = useState(false);
   const [allUser, setAllUser] = useState([]);
   const [approvedUser, setApprovedUser] = useState([]);
@@ -41,10 +30,11 @@ const Admin = () => {
   const [usersCount, setUsersCount] = useState({});
   const [userDetail, setUserDetail] = useState({});
 
+  const [message, setMessage] = useState("");
+
   const ticketRecordRef = useRef();
   const userRecordRef = useRef();
-
-  // ticket stuffs
+  const {mode} = Consume();
 
   const fetchTicket = () => {
     fetchTickets()
@@ -86,28 +76,27 @@ const Admin = () => {
       title: ticketDetail.title,
       description: ticketDetail.description,
       reporter: ticketDetail.reporter,
-      assignee: ticketDetail.assignee,
       ticketPriority: ticketDetail.ticketPriority,
-      status: ticketDetail.status,
     };
+    setSelectedCurrTicketStatus(ticketDetail.status);
+    setSelectedCurrTicketAssignee(ticketDetail.assignee);
     setSelectedCurrTicket(ticket);
     setTicketModal(true);
   };
 
   const onTicketUpdate = (e) => {
+    console.log("target: " + e.target);
+    console.log("id", e.target.id);
     if (e.target.id === "title") {
       selectedCurrTicket.title = e.target.value;
     } else if (e.target.id === "description") {
       selectedCurrTicket.description = e.target.value;
-    }
-    // else if (e.target.id === "assignee") {
-    //   selectedCurrTicket.assignee = e.target.value;
-    // }
-    else if (e.target.id === "reporter") {
+    } else if (e.target.id === "reporter") {
       selectedCurrTicket.reporter = e.target.value;
     } else if (e.target.id === "ticketPriority") {
       selectedCurrTicket.ticketPriority = e.target.value;
     } else if (e.target.id === "status") {
+      console.log("status: " + e.target.value);
       selectedCurrTicket.status = e.target.value;
     } else if (e.target.id === "assignee") {
       selectedCurrTicket.assignee = e.target.value;
@@ -119,7 +108,13 @@ const Admin = () => {
 
   const updateTicket = (e) => {
     e.preventDefault();
-    ticketUpdation(selectedCurrTicket.id, selectedCurrTicket)
+    const updatedData = {
+      ...selectedCurrTicket,
+      status: selectedCurrTicketStatus,
+      assignee: selectedCurrTicketAssignee,
+    };
+    console.log("upadted data", updatedData);
+    ticketUpdation(selectedCurrTicket.id, updatedData)
       .then(function (response) {
         fetchTicket();
         onCloseTicketModal();
@@ -168,15 +163,11 @@ const Admin = () => {
     setTicketsCount(data);
   };
 
-  // user stuffs
-
   const fetchUsers = (userId) => {
-    console.log("user id", userId);
     getAllUsers(userId)
       .then(function (response) {
         if (response.status === 200) {
           if (userId) {
-            console.log("response data", response.data);
             setUserDetail(response.data[0]);
             showUserModal();
           } else {
@@ -203,39 +194,9 @@ const Admin = () => {
       });
   };
 
-  console.log("user detail", userDetail);
-
   const showUserModal = () => {
     setUserModal(true);
   };
-
-  // const editUser = (userDetail) => {
-  //   console.log("user detail", userDetail);
-  //   const data = {
-  //     userId: userDetail.userId,
-  //     name: userDetail.name,
-  //     email: userDetail.email,
-  //     userStatus: userDetail.userStatus,
-  //     userTypes: userDetail.userTypes
-  //   };
-  //   setUserModal(true);
-  //   setSelectedCurrUser(data);
-  // };
-
-  // const onUserUpdate = (e) => {
-  //   if (e.target.id === "name") {
-  //     selectedCurrUser.name = e.target.value;
-  //   } else if (e.target.id === "email") {
-  //     selectedCurrUser.email = e.target.value;
-  //   } else if(e.target.id === "userStatus") {
-  //     selectedCurrUser.userStatus = e.target.value;
-  //   } else if (e.target.id === "userTypes") {
-  //     selectedCurrUser.userTypes = e.target.value;
-  //   }
-  //   updateSelectedCurrUser(Object.assign({}, selectedCurrUser));
-  // };
-
-  // const updateSelectedCurrUser = (data) => setSelectedCurrUser(data);
 
   const updateUser = () => {
     const data = {
@@ -319,7 +280,7 @@ const Admin = () => {
   }, []);
 
   return (
-    <div className="page-container admin-container">
+    <div className={`${mode === "dark" ? "darkModeBg page-container" : "page-container"}`}>
       <Sidebar
         sidebarStyle={sidebarStyle}
         ticketRef={ticketRecordRef}
@@ -442,6 +403,10 @@ const Admin = () => {
         onTicketUpdate={onTicketUpdate}
         allUser={allUser}
         updateTicket={updateTicket}
+        selectedCurrTicketStatus={selectedCurrTicketStatus}
+        setSelectedCurrTicketStatus={setSelectedCurrTicketStatus}
+        selectedCurrTicketAssignee={selectedCurrTicketAssignee}
+        setSelectedCurrTicketAssignee={setSelectedCurrTicketAssignee}
         admin
       />
       {/* user modal */}
@@ -451,6 +416,7 @@ const Admin = () => {
         updateUser={updateUser}
         userDetail={userDetail}
         changeUserDetail={changeUserDetail}
+        admin
       />
     </div>
   );

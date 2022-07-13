@@ -17,6 +17,7 @@ function Toast({ info }) {
         left: "50%",
         transform: "translateX(-50%)",
         borderBottom: '4px solid red',
+        zIndex: 999,
       }}
     >
       <h4 style={{ margin: 0, color: 'red', textTransform: 'uppercase' }}>{title}</h4>

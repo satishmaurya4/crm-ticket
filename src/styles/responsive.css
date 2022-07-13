@@ -22,7 +22,6 @@
         grid-template-columns: repeat(4, 1fr);
         margin:20px auto;
         gap: 20px;
-        border: 1px solid #000;
       }
       .card{
         width: 180px !important;
@@ -83,7 +82,6 @@
     }
     .card{
         width: 100% !important;
-        border: 1px solid red !important;
     }
   }
 

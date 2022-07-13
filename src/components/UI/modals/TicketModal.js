@@ -33,6 +33,10 @@ const TicketModal = ({
   onTicketUpdate,
   allUser,
   updateTicket,
+  selectedCurrTicketStatus,
+  setSelectedCurrTicketStatus,
+  selectedCurrTicketAssignee,
+  setSelectedCurrTicketAssignee,
   admin,
   engineer
 }) => {
@@ -84,16 +88,16 @@ const TicketModal = ({
             color={admin ? "secondary" : "warning"}
           />
           { admin && 
-          <FormControl sx={{width: "100%" }}>
+          <FormControl sx={{width: "100%" }} className={admin ? 'admin-select' : 'eng-select'}>
             <InputLabel id="demo-simple-select-helper-label">
               Assignee
             </InputLabel>
             <Select
                 labelId="demo-simple-select-helper-label"
                 id="assignee"
-                value={selectedCurrTicket.assignee}
+                value={selectedCurrTicketAssignee}
                 label="Assignee"
-                onChange={onTicketUpdate}
+                onChange={(event) => setSelectedCurrTicketAssignee(event.target.value)}
                 color={admin ? "secondary" : "warning"}
               >
                 {allUser.map((user) => {
@@ -132,9 +136,9 @@ const TicketModal = ({
             <Select
               labelId="demo-simple-select-helper-label"
               id="status"
-              value={selectedCurrTicket.status}
+              value={selectedCurrTicketStatus}
               label="Status"
-              onChange={onTicketUpdate}
+              onChange={(event) => setSelectedCurrTicketStatus(event.target.value)} 
               color={admin ? "secondary" : "warning"}
               style={{ width: '100%' }}
               
