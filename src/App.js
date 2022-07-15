@@ -15,9 +15,6 @@ import "./styles/globalStyles.css";
 import "./App.css";
 import "./styles/variables.css";
 import "./styles/responsive.css";
-import { ThemeProvider } from "@mui/material/styles";
-import { Consume } from "./context";
-import ThemeToggler from "./components/ThemeToggler";
 
 const ROLES = {
   CUSTOMER: "CUSTOMER",
@@ -26,48 +23,43 @@ const ROLES = {
 };
 
 function App() {
-  const { ModeTheme } = Consume();
   return (
-      <ThemeProvider theme={ModeTheme}>
-      <ThemeToggler />
-      <Router>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Suspense
-                fallback={
-                  <div
-                    style={{
-                      width: "100vw",
-                      height: "100vh",
-                      backgroundColor: "blue",
-                      fontSize: "40px",
-                    }}
-                  >
-                    Loading...
-                  </div>
-                }
-              >
-                <Login />
-              </Suspense>
-            }
-          />
-          <Route element={<RequireAuth allowedRoles={[ROLES.ADMIN]} />}>
-            <Route path="/admin" exact element={<Admin />} />
-          </Route>
-          <Route element={<RequireAuth allowedRoles={[ROLES.CUSTOMER]} />}>
-            <Route path="/customer" exact element={<Customer />} />
-          </Route>
-          <Route element={<RequireAuth allowedRoles={[ROLES.ENGINEER]} />}>
-            <Route path="/engineer" exact element={<Engineer />} />
-          </Route>
-          <Route path="/unauthorized" element={<Unauthorized />} />
-          <Route path="/*" element={<NotFound />} />
-        </Routes>
-      </Router>
-      </ThemeProvider>
-      
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Suspense
+              fallback={
+                <div
+                  style={{
+                    width: "100vw",
+                    height: "100vh",
+                    backgroundColor: "blue",
+                    fontSize: "40px",
+                  }}
+                >
+                  Loading...
+                </div>
+              }
+            >
+              <Login />
+            </Suspense>
+          }
+        />
+        <Route element={<RequireAuth allowedRoles={[ROLES.ADMIN]} />}>
+          <Route path="/admin" exact element={<Admin />} />
+        </Route>
+        <Route element={<RequireAuth allowedRoles={[ROLES.CUSTOMER]} />}>
+          <Route path="/customer" exact element={<Customer />} />
+        </Route>
+        <Route element={<RequireAuth allowedRoles={[ROLES.ENGINEER]} />}>
+          <Route path="/engineer" exact element={<Engineer />} />
+        </Route>
+        <Route path="/unauthorized" element={<Unauthorized />} />
+        <Route path="/*" element={<NotFound />} />
+      </Routes>
+    </Router>
   );
 }
 

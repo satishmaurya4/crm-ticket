@@ -69,10 +69,9 @@ const UserModal = ({
               color="secondary"
               style={{ width: "100%" }}
             >
-              <MenuItem value="OPEN" className={admin ? 'admin-menuItem': 'eng-menuItem'}>OPEN</MenuItem>
-              <MenuItem value="CLOSED" className={admin ? 'admin-menuItem': 'eng-menuItem'}>CLOSED</MenuItem>
-              <MenuItem value="IN_PROGRESS" className={admin ? 'admin-menuItem': 'eng-menuItem'}>IN_PROGRESS</MenuItem>
-              <MenuItem value="BLOCKED" className={admin ? 'admin-menuItem': 'eng-menuItem'}>BLOCKED</MenuItem>
+              <MenuItem value="APPROVED" className={admin ? 'admin-menuItem': 'eng-menuItem'}>APPROVED</MenuItem>
+              <MenuItem value="PENDING" className={admin ? 'admin-menuItem': 'eng-menuItem'}>PENDING</MenuItem>
+              <MenuItem value="REJECTED" className={admin ? 'admin-menuItem': 'eng-menuItem'}>REJECTED</MenuItem>
             </Select>
           </FormControl>
 

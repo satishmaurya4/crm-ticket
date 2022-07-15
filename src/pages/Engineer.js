@@ -5,6 +5,7 @@ import { fetchTickets, ticketUpdation } from "../api/tickets";
 import TicketTable from "../components/TicketTable";
 import TicketModal from "../components/UI/modals/TicketModal";
 import { logout } from "../utils/logout";
+import RecordLoader from "../components/UI/RecordLoader";
 
 const Engineer = () => {
   const [ticketModal, setTicketModal] = useState(false);
@@ -15,9 +16,13 @@ const Engineer = () => {
   const [closedTicket, setClosedTicket] = useState([]);
   const [blockedTicket, setBlockedTicket] = useState([]);
   const [selectedCurrTicket, setSelectedCurrTicket] = useState({});
+  const [selectedCurrTicketStatus, setSelectedCurrTicketStatus] = useState("");
+
   const [message, setMessage] = useState("");
+  const [showRecordLoader, setShowRecordLoader] = useState(false);
 
   const ticketRecordRef = useRef();
+  const topRef = useRef();
 
   const fetchAllTickets = () => {
     fetchTickets()
@@ -84,8 +89,8 @@ const Engineer = () => {
       reporter: ticketDetail.reporter,
       assignee: ticketDetail.assignee,
       ticketPriority: ticketDetail.ticketPriority,
-      status: ticketDetail.status,
     };
+    setSelectedCurrTicketStatus(ticketDetail.status);
     setSelectedCurrTicket(ticket);
     setTicketModal(true);
   };
@@ -96,8 +101,8 @@ const Engineer = () => {
       selectedCurrTicket.description = event.target.value;
     } else if (event.target.id === "ticketPriority") {
       selectedCurrTicket.ticketPriority = event.target.value;
-    } else if (event.target.id === "status") {
-      selectedCurrTicket.status = event.target.value;
+    } else if (event.target.id === "status") { 
+
     }
     updateSelectedCurrTicket(Object.assign({}, selectedCurrTicket));
   };
@@ -106,10 +111,13 @@ const Engineer = () => {
 
   const updateTicket = (e) => {
     e.preventDefault();
-    ticketUpdation(selectedCurrTicket.id, selectedCurrTicket)
+    onCloseTicketModal();
+    setShowRecordLoader(true);
+    const data = { ...selectedCurrTicket, status: selectedCurrTicketStatus }
+    ticketUpdation(selectedCurrTicket.id, data)
       .then(function (response) {
         setMessage("Ticket Updated Successfully");
-        onCloseTicketModal();
+        setShowRecordLoader(false);
         fetchAllTickets();
       })
       .catch(function (error) {
@@ -139,8 +147,12 @@ const Engineer = () => {
     })();
   }, []);
   return (
-    <div className="page-container engineer-container">
-      <Sidebar sidebarStyle={sidebarStyle} ticketRef={ticketRecordRef} />
+    <>
+      {
+        showRecordLoader && <RecordLoader />
+      }
+    <div className="page-container" ref={topRef}>
+      <Sidebar sidebarStyle={sidebarStyle} ticketRef={ticketRecordRef} topRef={topRef}/>
       <h3
         className="engineer-title text-center"
         style={{ color: "var(--engineer-content-color)" }}
@@ -203,12 +215,15 @@ const Engineer = () => {
       <TicketModal
         ticketModal={ticketModal}
         onCloseTicketModal={onCloseTicketModal}
-        selectedCurrTicket={selectedCurrTicket}
+          selectedCurrTicket={selectedCurrTicket}
+          selectedCurrTicketStatus={selectedCurrTicketStatus}
+          setSelectedCurrTicketStatus={setSelectedCurrTicketStatus}
         onTicketUpdate={onTicketUpdate}
         updateTicket={updateTicket}
         engineer
       />
-    </div>
+      </div>
+      </>
   );
 };
 

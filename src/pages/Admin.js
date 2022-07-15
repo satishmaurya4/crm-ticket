@@ -9,7 +9,8 @@ import UserTable from "../components/UserTable";
 import TicketModal from "../components/UI/modals/TicketModal";
 import UserModal from "../components/UI/modals/UserModal";
 import { logout } from "../utils/logout";
-import { Consume } from "../context";
+import RecordLoader from "../components/UI/RecordLoader";
+
 const Admin = () => {
   const [ticketModal, setTicketModal] = useState(false);
   const [allTicket, setAllTicket] = useState([]);
@@ -19,8 +20,7 @@ const Admin = () => {
   const [blockedTicket, setBlockedTicket] = useState([]);
   const [selectedCurrTicket, setSelectedCurrTicket] = useState({});
   const [selectedCurrTicketStatus, setSelectedCurrTicketStatus] = useState("");
-  const [selectedCurrTicketAssignee, setSelectedCurrTicketAssignee] =
-    useState("");
+  const [selectedCurrTicketAssignee, setSelectedCurrTicketAssignee] =useState("");
   const [ticketsCount, setTicketsCount] = useState({});
 
   const [userModal, setUserModal] = useState(false);
@@ -32,10 +32,11 @@ const Admin = () => {
   const [userDetail, setUserDetail] = useState({});
 
   const [message, setMessage] = useState("");
+  const [showRecordLoader, setShowRecordLoader] = useState(false);
 
   const ticketRecordRef = useRef();
   const userRecordRef = useRef();
-  const { mode } = Consume();
+  const topRef= useRef();
 
   const fetchTicket = () => {
     fetchTickets()
@@ -91,11 +92,7 @@ const Admin = () => {
       selectedCurrTicket.reporter = e.target.value;
     } else if (e.target.id === "ticketPriority") {
       selectedCurrTicket.ticketPriority = e.target.value;
-    } else if (e.target.id === "status") {
-      selectedCurrTicket.status = e.target.value;
-    } else if (e.target.id === "assignee") {
-      selectedCurrTicket.assignee = e.target.value;
-    }
+    } 
     updateSelectedCurrTicket(Object.assign({}, selectedCurrTicket));
   };
 
@@ -103,6 +100,8 @@ const Admin = () => {
 
   const updateTicket = (e) => {
     e.preventDefault();
+    onCloseTicketModal();
+    setShowRecordLoader(true);
     const updatedData = {
       ...selectedCurrTicket,
       status: selectedCurrTicketStatus,
@@ -110,8 +109,8 @@ const Admin = () => {
     };
     ticketUpdation(selectedCurrTicket.id, updatedData)
       .then(function (response) {
+        setShowRecordLoader(false);
         fetchTicket();
-        onCloseTicketModal();
       })
       .catch(function (error) {
         if (error.response.status === 400) setMessage(error.message);
@@ -191,6 +190,8 @@ const Admin = () => {
   };
 
   const updateUser = () => {
+    onCloseUserModal();
+    setShowRecordLoader(true);
     const data = {
       userType: userDetail.userTypes,
       userStatus: userDetail.userStatus,
@@ -199,11 +200,12 @@ const Admin = () => {
     updateUserDetails(userDetail.userId, data)
       .then((res) => {
         if (res.status === 200) {
+          setMessage(res.message);
           let idx = allUser.findIndex(
             (user) => user.userId === userDetail.userId
           );
           allUser[idx] = userDetail;
-          onCloseUserModal();
+          setShowRecordLoader(false);
         }
       })
       .catch((err) => {
@@ -272,15 +274,16 @@ const Admin = () => {
   }, []);
 
   return (
-    <div
-      className={`${
-        mode === "dark" ? "darkModeBg page-container" : "page-container"
-      }`}
-    >
+    <>
+      {
+        showRecordLoader && <RecordLoader />
+      }
+    <div className="page-container" ref={topRef}>
       <Sidebar
         sidebarStyle={sidebarStyle}
         ticketRef={ticketRecordRef}
         goToUserRecord={goToUserRecord}
+        topRef={topRef}
         admin
       />
 
@@ -407,7 +410,8 @@ const Admin = () => {
         changeUserDetail={changeUserDetail}
         admin
       />
-    </div>
+      </div>
+      </>
   );
 };
 

@@ -1,11 +1,12 @@
-import { green } from "@material-ui/core/colors";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/sidebar.css";
 import { logout } from "../utils/logout";
-import { goToTicketRecord } from "../utils/goToTicketRecord";
+import { goToTicketRecord } from "../utils/goTo";
+import { goToTop } from "../utils/goTo";
 
-const Sidebar = ({ sidebarStyle:{bg,logo}, ticketRef, goToUserRecord, admin }) => {
-  
+const Sidebar = ({ sidebarStyle:{bg,logo}, ticketRef, goToUserRecord, topRef, admin }) => {
+  const navigate = useNavigate();
   const sidebarFn = () => {
     let list = document.querySelectorAll(".list");
 
@@ -42,7 +43,7 @@ const Sidebar = ({ sidebarStyle:{bg,logo}, ticketRef, goToUserRecord, admin }) =
       </div>
       <ul>
         <li className="list active">
-          <div className="sidebar-item">
+          <div className="sidebar-item" onClick={()=>goToTop(topRef)}>
             <span className="icon">
               <i className="bi bi-speedometer2"></i>
             </span>
@@ -70,7 +71,7 @@ const Sidebar = ({ sidebarStyle:{bg,logo}, ticketRef, goToUserRecord, admin }) =
         </li>
              }
         <li className="list">
-          <div className="sidebar-item" onClick={logout}>
+          <div className="sidebar-item" onClick={()=>logout(navigate)}>
             <span className="icon">
               <i className="bi bi-door-closed"></i>
             </span>

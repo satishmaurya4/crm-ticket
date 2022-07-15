@@ -18,7 +18,6 @@ import {
   InputLabel,
   CircularProgress,
 } from "@mui/material";
-import { Consume } from "../context";
 import { logout } from "../utils/logout";
 
 const Login = () => {
@@ -32,7 +31,6 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const { mode } = Consume();
 
   const toggleSignup = () => {
     clearState();
@@ -189,7 +187,7 @@ const Login = () => {
   }
 
   return (
-    <div className={`${mode === "dark" ? "darkModeBg login-container" : "login-container"}`}>
+    <div className="login-container">
       {apiMessage && <Toast info={apiMessage} />}
 
       <div className="login-content-wrapper">

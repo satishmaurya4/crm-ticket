@@ -16,6 +16,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { logout } from "../utils/logout";
+import RecordLoader from "../components/UI/RecordLoader";
 
 const style = {
   position: "absolute",
@@ -43,8 +44,10 @@ function Customer() {
   const [pendingTicket, setPendingTicket] = useState([]);
   const [blockedTicket, setBlockedTicket] = useState([]);
   const [ticketsCount, setTicketsCount] = useState({});
+  const [showRecordLoader, setShowRecordLoader] = useState(false);
 
   const ticketRecordRef = useRef();
+  const topRef = useRef();
 
   const showCreateTicketModal = () => setCreateTicketModal(true);
   const closeCreateTicketModal = () => {
@@ -85,6 +88,8 @@ function Customer() {
 
   const createTicket = (e) => {
     e.preventDefault();
+    closeCreateTicketModal();
+    setShowRecordLoader(true);
     const data = {
       title: e.target.title.value,
       description: e.target.description.value,
@@ -92,7 +97,8 @@ function Customer() {
     ticketCreation(data)
       .then(function (response) {
         setMessage("Ticket updated successfully");
-        closeCreateTicketModal();
+        setShowRecordLoader(false);
+
         fetchTicket();
       })
       .catch((error) => {
@@ -129,10 +135,13 @@ function Customer() {
 
   const updateTicket = (e) => {
     e.preventDefault();
+    closeUpdateTicketModal();
+    setShowRecordLoader(true);
     ticketUpdation(selectedCurrTicket.id, selectedCurrTicket)
       .then(function (response) {
         setMessage("Ticket Updated Successfully");
-        closeUpdateTicketModal();
+        setShowRecordLoader(false);
+
         fetchTicket();
       })
       .catch(function (error) {
@@ -183,8 +192,13 @@ function Customer() {
   }, []);
   return (
     <>
-      <div className="page-container">
-        <Sidebar sidebarStyle={sidebarStyle} ticketRef={ticketRecordRef} />
+      {showRecordLoader && <RecordLoader />}
+      <div className="page-container" ref={topRef}>
+        <Sidebar
+          sidebarStyle={sidebarStyle}
+          ticketRef={ticketRecordRef}
+          topRef={topRef}
+        />
         <h3
           className="text-center"
           style={{ color: "var(--customer-content-color)" }}
@@ -319,7 +333,7 @@ function Customer() {
                   sx={{ width: "100%" }}
                 />
 
-                <FormControl sx={{ width: "100%" }}>
+                <FormControl sx={{ width: "100%" }} className="cx-select">
                   <InputLabel id="demo-simple-select-helper-label">
                     Status
                   </InputLabel>
@@ -330,6 +344,7 @@ function Customer() {
                     label="Status"
                     onChange={onTicketUpdate}
                     style={{ width: "100%" }}
+                    color = "info"
                   >
                     <MenuItem value="OPEN">OPEN</MenuItem>
                     <MenuItem value="CLOSED">CLOSED</MenuItem>

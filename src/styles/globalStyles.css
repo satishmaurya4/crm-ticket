@@ -129,6 +129,10 @@
 .eng-select .css-lh7n6p-MuiFormLabel-root-MuiInputLabel-root.Mui-focused{
   color: var(--engineer-content-color) !important;
 }
+.cx-select .css-lh7n6p-MuiFormLabel-root-MuiInputLabel-root.Mui-focused{
+  color: var(--customer-content-color) !important;
+}
+
 
 .modal-id {
   border-radius: 10px;

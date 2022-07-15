@@ -4,3 +4,9 @@ export const goToTicketRecord = (ticketRef) => {
       behavior: "smooth",
     })
   }
+export const goToTop = (topRef) => {
+    window.scrollTo({
+      top: topRef.current.offsetTop,
+      behavior: "smooth",
+    })
+  }
