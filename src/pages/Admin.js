@@ -237,7 +237,7 @@ const Admin = () => {
 
   const updateUser = () => {
     onCloseUserModal();
-    setShowRecordLoader(true);
+
     const data = {
       userType: userDetail.userTypes,
       userStatus: userDetail.userStatus,
@@ -258,7 +258,6 @@ const Admin = () => {
             (user) => user.userId === userDetail.userId
           );
           allUser[idx] = userDetail;
-          setShowRecordLoader(false);
         }
       })
       .catch((err) => {
@@ -354,6 +353,7 @@ const Admin = () => {
           setOpenToast={setOpenToast}
         />
       )}
+
       <div className="page-container" ref={topRef}>
         <Sidebar
           sidebarStyle={sidebarStyle}

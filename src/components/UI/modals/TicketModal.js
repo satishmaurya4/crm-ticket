@@ -9,6 +9,7 @@ import {
   TextareaAutosize,
   FormControl,
   InputLabel,
+  CircularProgress,
 } from "@mui/material";
 
 const style = {
@@ -37,6 +38,7 @@ const TicketModal = ({
   setSelectedCurrTicketStatus,
   selectedCurrTicketAssignee,
   setSelectedCurrTicketAssignee,
+  isLoading,
   admin,
   engineer,
 }) => {
@@ -104,11 +106,7 @@ const TicketModal = ({
                 {allUser.map((user, i) => {
                   if (user.userTypes === "ENGINEER") {
                     return (
-                      <MenuItem
-                        value={user.name}
-                        key={i}
-                        textColor="secondary"
-                      >
+                      <MenuItem value={user.name} key={i} textColor="secondary">
                         {user.name}
                       </MenuItem>
                     );
@@ -203,7 +201,7 @@ const TicketModal = ({
               color={admin ? "secondary" : "warning"}
               type="submit"
             >
-              Update
+              {isLoading ? <CircularProgress color="inherit" /> : "Update"}
             </Button>
           </Box>
         </form>

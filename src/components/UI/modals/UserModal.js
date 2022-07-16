@@ -8,6 +8,7 @@ import {
   Button,
   FormControl,
   InputLabel,
+  CircularProgress
 } from "@mui/material";
 
 const style = {
@@ -31,6 +32,7 @@ const UserModal = ({
   updateUser,
   userDetail,
   changeUserDetail,
+  isLoading,
   admin
 }) => {
   return (
@@ -104,7 +106,7 @@ const UserModal = ({
               Cancel
             </Button>
             <Button variant="contained" color="secondary" type="submit">
-              Update
+              {isLoading ? <CircularProgress color="inherit" /> : "Update"}
             </Button>
           </Box>
         </form>
