@@ -1,30 +1,31 @@
-import React from "react";
+import * as React from "react";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 
-function Toast({ info }) {
-  const { status, title, message } = info;
-  // const style = {
-  //   background
-  // }
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+export default function Toast({ info: { status, message }, openToast, setOpenToast }) {
+  const { open,vertical, horizontal } = openToast;
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenToast({
+      open: false,
+      vertical,
+      horizontal
+    });
+  };
+
   return (
-    <div
-      style={{
-        width: "max-content",
-        padding: "5px",
-        backgroundColor: "tomato",
-        borderRadius: "10px",
-        position: "fixed",
-        top: "10px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        borderBottom: '4px solid red',
-        zIndex: 999,
-      }}
-    >
-      <h4 style={{ margin: 0, color: 'red', textTransform: 'uppercase' }}>{title}</h4>
-      <hr style={{margin: 0,}}/>
-      <p style={{margin: 0, color: '#fff'}}>{message}</p>
-    </div>
+    <Snackbar open={open} autoHideDuration={1000} onClose={handleClose} anchorOrigin={{ vertical, horizontal }}>
+      <Alert onClose={handleClose} severity={status} sx={{ width: "100%" }}>
+        {message}
+      </Alert>
+    </Snackbar>
   );
 }
 
-export default Toast;

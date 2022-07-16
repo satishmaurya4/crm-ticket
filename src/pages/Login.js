@@ -28,6 +28,11 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [apiMessage, setApiMessage] = useState("");
   const [showAccountAnimation, setShowAccountAnimation] = useState(false);
+  const [openToast, setOpenToast] = useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
 
   const navigate = useNavigate();
 
@@ -87,12 +92,20 @@ const Login = () => {
       .catch(function (error) {
         setIsLoading(false);
         if (error.response.status === 400) {
+          setOpenToast({
+            ...openToast,
+            open: true,
+          });
           setApiMessage({
             status: "error",
             title: "error",
             message: error.response.data.message,
           });
         } else {
+          setOpenToast({
+            ...openToast,
+            open: true,
+          });
           setApiMessage({
             status: "error",
             title: "error",
@@ -116,7 +129,6 @@ const Login = () => {
         setIsLoading(false);
         if (response.data.message) {
         } else {
-      
           localStorage.setItem("name", response.data.name);
           localStorage.setItem("userId", response.data.userId);
           localStorage.setItem("email", response.data.email);
@@ -124,17 +136,21 @@ const Login = () => {
           localStorage.setItem("userStatus", response.data.userStatus);
           localStorage.setItem("token", response.data.accessToken);
           if (response.data.userTypes === "CUSTOMER") {
-            navigate("/customer");
+            navigateTo("/customer");
           } else if (response.data.userTypes === "ENGINEER") {
-            navigate("/engineer");
+            navigateTo("/engineer");
           } else {
-            navigate("/admin");
+            navigateTo("/admin");
           }
         }
       })
       .catch(function (error) {
         setIsLoading(false);
         if (error.response.status === 400) {
+          setOpenToast({
+            ...openToast,
+            open: true,
+          });
           setApiMessage({
             status: "error",
             title: "error",
@@ -146,17 +162,16 @@ const Login = () => {
       });
   };
 
-  useEffect(() => {
-    let id;
-    if (apiMessage) {
-      id = setTimeout(() => {
-        setApiMessage("");
-      }, 2000);
-    }
-    return () => {
-      clearTimeout(id);
-    };
-  }, [apiMessage]);
+  const navigateTo = (pagePath) => {
+    setApiMessage({ status: "success", message: "Logged in successfully" });
+    setOpenToast({
+      ...openToast,
+      open: true,
+    });
+    setTimeout(() => { 
+      navigate(pagePath);
+    }, 1000);
+  }
 
   if (showAccountAnimation) {
     return (
@@ -188,7 +203,7 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      {apiMessage && <Toast info={apiMessage} />}
+      <Toast info={apiMessage} openToast={openToast} setOpenToast={setOpenToast} />
 
       <div className="login-content-wrapper">
         <Typography

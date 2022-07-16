@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { logout } from "../utils/logout";
 import RecordLoader from "../components/UI/RecordLoader";
+import Toast from "../components/Toast";
 
 const style = {
   position: "absolute",
@@ -37,7 +38,6 @@ function Customer() {
   const [createTicketModal, setCreateTicketModal] = useState(false);
   const [updateTicketModal, setUpdateTicketModal] = useState(false);
   const [selectedCurrTicket, setSelectedCurrTicket] = useState({});
-  const [message, setMessage] = useState("");
   const [allTicket, setAllTicket] = useState([]);
   const [openTicket, setOpenTicket] = useState([]);
   const [closedTicket, setClosedTicket] = useState([]);
@@ -45,6 +45,13 @@ function Customer() {
   const [blockedTicket, setBlockedTicket] = useState([]);
   const [ticketsCount, setTicketsCount] = useState({});
   const [showRecordLoader, setShowRecordLoader] = useState(false);
+  const [apiMessage, setApiMessage] = useState("");
+  const [openToast, setOpenToast] = useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
+
 
   const ticketRecordRef = useRef();
   const topRef = useRef();
@@ -59,8 +66,10 @@ function Customer() {
   };
 
   const fetchTicket = () => {
+    setShowRecordLoader(true);
     fetchTickets()
       .then(function (response) {
+        setShowRecordLoader(false);
         const data = response.data;
         const getOpenTicket = response.data.filter((ticket) => {
           return ticket.status === "OPEN";
@@ -82,7 +91,14 @@ function Customer() {
         updateTicketCount(data);
       })
       .catch(function (error) {
-        setMessage(error.message);
+        setApiMessage({
+          status: 'error',
+          message: error.message,
+        });
+        setOpenToast({
+          ...openToast,
+          open: true,
+        })
       });
   };
 
@@ -96,13 +112,23 @@ function Customer() {
     };
     ticketCreation(data)
       .then(function (response) {
-        setMessage("Ticket updated successfully");
+        setApiMessage({
+          status: 'success',
+          message: "Ticket created successfully"
+        });
+        setOpenToast({
+          ...openToast,
+          open: true,
+        })
         setShowRecordLoader(false);
 
         fetchTicket();
       })
       .catch((error) => {
-        setMessage(error.message);
+        setApiMessage({
+          status: 'error',
+          message: error.message
+        });
       });
   };
 
@@ -139,13 +165,29 @@ function Customer() {
     setShowRecordLoader(true);
     ticketUpdation(selectedCurrTicket.id, selectedCurrTicket)
       .then(function (response) {
-        setMessage("Ticket Updated Successfully");
+        setApiMessage({
+          status: 'success',
+          message: "Ticket Updated Successfully"
+        });
+        setOpenToast({
+          ...openToast,
+          open: true,
+        })
         setShowRecordLoader(false);
 
         fetchTicket();
       })
       .catch(function (error) {
-        if (error.response.status === 400) setMessage(error.message);
+        if (error.response.status === 400) {
+          setApiMessage({
+            status: 'error',
+            message: error.response
+          })
+          setOpenToast({
+            ...openToast,
+            open:true
+          })
+        }
         else if (error.response.status === 401) logout();
       });
   };
@@ -192,7 +234,9 @@ function Customer() {
   }, []);
   return (
     <>
-      {showRecordLoader && <RecordLoader />}
+      {
+        showRecordLoader ? <RecordLoader /> : <Toast info={apiMessage} openToast={openToast} setOpenToast={setOpenToast} />      
+      }
       <div className="page-container" ref={topRef}>
         <Sidebar
           sidebarStyle={sidebarStyle}
@@ -346,8 +390,8 @@ function Customer() {
                     style={{ width: "100%" }}
                     color = "info"
                   >
-                    <MenuItem value="OPEN">OPEN</MenuItem>
-                    <MenuItem value="CLOSED">CLOSED</MenuItem>
+                    <MenuItem value="OPEN" className="cx-menuItem">OPEN</MenuItem>
+                    <MenuItem value="CLOSED" className="cx-menuItem">CLOSED</MenuItem>
                   </Select>
                 </FormControl>
 

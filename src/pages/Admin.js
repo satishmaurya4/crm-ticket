@@ -10,6 +10,7 @@ import TicketModal from "../components/UI/modals/TicketModal";
 import UserModal from "../components/UI/modals/UserModal";
 import { logout } from "../utils/logout";
 import RecordLoader from "../components/UI/RecordLoader";
+import Toast from "../components/Toast";
 
 const Admin = () => {
   const [ticketModal, setTicketModal] = useState(false);
@@ -20,7 +21,8 @@ const Admin = () => {
   const [blockedTicket, setBlockedTicket] = useState([]);
   const [selectedCurrTicket, setSelectedCurrTicket] = useState({});
   const [selectedCurrTicketStatus, setSelectedCurrTicketStatus] = useState("");
-  const [selectedCurrTicketAssignee, setSelectedCurrTicketAssignee] =useState("");
+  const [selectedCurrTicketAssignee, setSelectedCurrTicketAssignee] =
+    useState("");
   const [ticketsCount, setTicketsCount] = useState({});
 
   const [userModal, setUserModal] = useState(false);
@@ -31,16 +33,24 @@ const Admin = () => {
   const [usersCount, setUsersCount] = useState({});
   const [userDetail, setUserDetail] = useState({});
 
-  const [message, setMessage] = useState("");
+  const [apiMessage, setApiMessage] = useState("");
   const [showRecordLoader, setShowRecordLoader] = useState(false);
+
+  const [openToast, setOpenToast] = useState({
+    open: false,
+    vertical: "top",
+    horizontal: "center",
+  });
 
   const ticketRecordRef = useRef();
   const userRecordRef = useRef();
-  const topRef= useRef();
+  const topRef = useRef();
 
   const fetchTicket = () => {
+    setShowRecordLoader(true);
     fetchTickets()
       .then(function (response) {
+        setShowRecordLoader(false);
         if (response.status === 200) {
           const getOpenTicket = response.data.filter((ticket) => {
             return ticket.status === "OPEN";
@@ -92,7 +102,7 @@ const Admin = () => {
       selectedCurrTicket.reporter = e.target.value;
     } else if (e.target.id === "ticketPriority") {
       selectedCurrTicket.ticketPriority = e.target.value;
-    } 
+    }
     updateSelectedCurrTicket(Object.assign({}, selectedCurrTicket));
   };
 
@@ -111,11 +121,36 @@ const Admin = () => {
       .then(function (response) {
         setShowRecordLoader(false);
         fetchTicket();
+        setApiMessage({
+          status: "success",
+          message: "Ticket updated successfully",
+        });
+        setOpenToast({
+          ...openToast,
+          open: true,
+        });
       })
       .catch(function (error) {
-        if (error.response.status === 400) setMessage(error.message);
-        else if (error.response.status === 401) logout();
-        else setMessage(error.message);
+        if (error.response.status === 400) {
+          setApiMessage({
+            status: "error",
+            message: error.message,
+          });
+          setOpenToast({
+            ...openToast,
+            open: true,
+          });
+        } else if (error.response.status === 401) logout();
+        else {
+          setApiMessage({
+            status: "error",
+            message: error.message,
+          });
+          setOpenToast({
+            ...openToast,
+            open: true,
+          });
+        }
       });
   };
 
@@ -157,8 +192,10 @@ const Admin = () => {
   };
 
   const fetchUsers = (userId) => {
+    setShowRecordLoader(true);
     getAllUsers(userId)
       .then(function (response) {
+        setShowRecordLoader(false);
         if (response.status === 200) {
           if (userId) {
             setUserDetail(response.data[0]);
@@ -182,7 +219,16 @@ const Admin = () => {
           }
         }
       })
-      .catch((error) => {});
+      .catch((error) => {
+        setApiMessage({
+          status: "error",
+          message: error.message,
+        });
+        setOpenToast({
+          ...openToast,
+          open: true,
+        });
+      });
   };
 
   const showUserModal = () => {
@@ -200,7 +246,14 @@ const Admin = () => {
     updateUserDetails(userDetail.userId, data)
       .then((res) => {
         if (res.status === 200) {
-          setMessage(res.message);
+          setApiMessage({
+            status: "success",
+            message: "User detail updated successfully",
+          });
+          setOpenToast({
+            ...openToast,
+            open: true,
+          });
           let idx = allUser.findIndex(
             (user) => user.userId === userDetail.userId
           );
@@ -209,9 +262,26 @@ const Admin = () => {
         }
       })
       .catch((err) => {
-        if (err.status === 400) setMessage(err.message);
-        else if (err.response.status === 401) logout();
-        else setMessage(err.message);
+        if (err.status === 400) {
+          setApiMessage({
+            status: "error",
+            message: err.message,
+          });
+          setOpenToast({
+            ...openToast,
+            open: true,
+          });
+        } else if (err.response.status === 401) logout();
+        else {
+          setApiMessage({
+            status: "error",
+            message: err.message,
+          });
+          setOpenToast({
+            ...openToast,
+            open: true,
+          });
+        }
       });
   };
 
@@ -275,143 +345,149 @@ const Admin = () => {
 
   return (
     <>
-      {
-        showRecordLoader && <RecordLoader />
-      }
-    <div className="page-container" ref={topRef}>
-      <Sidebar
-        sidebarStyle={sidebarStyle}
-        ticketRef={ticketRecordRef}
-        goToUserRecord={goToUserRecord}
-        topRef={topRef}
-        admin
-      />
+      {showRecordLoader ? (
+        <RecordLoader />
+      ) : (
+        <Toast
+          info={apiMessage}
+          openToast={openToast}
+          setOpenToast={setOpenToast}
+        />
+      )}
+      <div className="page-container" ref={topRef}>
+        <Sidebar
+          sidebarStyle={sidebarStyle}
+          ticketRef={ticketRecordRef}
+          goToUserRecord={goToUserRecord}
+          topRef={topRef}
+          admin
+        />
 
-      <h3
-        className="admin-title text-center"
-        style={{ color: "var(--admin-content-color)" }}
-      >
-        Welcome, {localStorage.getItem("name")}
-      </h3>
-      <p className="admin-sub-title text-center">
-        Take a quick look at your status below
-      </p>
-
-      <div className="records" ref={ticketRecordRef}>
-        <h4
-          className="records-title"
-          style={{ background: "var(--admin-content-bg-gradient)" }}
+        <h3
+          className="admin-title text-center"
+          style={{ color: "var(--admin-content-color)" }}
         >
-          <span className="records-title-ring"></span>
-          <span>ticket records</span>
-          <span className="records-title-ring"></span>
-        </h4>
-        <div className="records-stats">
-          <TicketTable
-            editTicket={editTicket}
-            ticketList={{
-              all: allTicket,
-              open: openTicket,
-              closed: closedTicket,
-              pending: pendingTicket,
-              blocked: blockedTicket,
-            }}
-            admin
-          />
-          <div className="ticket-stats">
-            <TicketCountCard
-              status="open"
-              title="open"
-              count={ticketsCount.open}
-              totalCount={ticketsCount.all}
+          Welcome, {localStorage.getItem("name")}
+        </h3>
+        <p className="admin-sub-title text-center">
+          Take a quick look at your status below
+        </p>
+
+        <div className="records" ref={ticketRecordRef}>
+          <h4
+            className="records-title"
+            style={{ background: "var(--admin-content-bg-gradient)" }}
+          >
+            <span className="records-title-ring"></span>
+            <span>ticket records</span>
+            <span className="records-title-ring"></span>
+          </h4>
+          <div className="records-stats">
+            <TicketTable
+              editTicket={editTicket}
+              ticketList={{
+                all: allTicket,
+                open: openTicket,
+                closed: closedTicket,
+                pending: pendingTicket,
+                blocked: blockedTicket,
+              }}
+              admin
             />
-            <TicketCountCard
-              status="closed"
-              title="closed"
-              count={ticketsCount.closed}
-              totalCount={ticketsCount.all}
-            />
-            <TicketCountCard
-              status="pending"
-              title="pending"
-              count={ticketsCount.pending}
-              totalCount={ticketsCount.all}
-            />
-            <TicketCountCard
-              status="blocked"
-              title="blocked"
-              count={ticketsCount.blocked}
-              totalCount={ticketsCount.all}
-            />
+            <div className="ticket-stats">
+              <TicketCountCard
+                status="open"
+                title="open"
+                count={ticketsCount.open}
+                totalCount={ticketsCount.all}
+              />
+              <TicketCountCard
+                status="closed"
+                title="closed"
+                count={ticketsCount.closed}
+                totalCount={ticketsCount.all}
+              />
+              <TicketCountCard
+                status="pending"
+                title="pending"
+                count={ticketsCount.pending}
+                totalCount={ticketsCount.all}
+              />
+              <TicketCountCard
+                status="blocked"
+                title="blocked"
+                count={ticketsCount.blocked}
+                totalCount={ticketsCount.all}
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="records" ref={userRecordRef}>
-        <h4
-          className="records-title"
-          style={{ background: "var(--admin-content-bg-gradient)" }}
-        >
-          <span className="records-title-ring"></span>
-          <span>user records</span>
-          <span className="records-title-ring"></span>
-        </h4>
-        <div className="records-stats">
-          <UserTable
-            fetchUsers={fetchUsers}
-            userList={{
-              all: allUser,
-              approved: approvedUser,
-              pending: pendingUser,
-              rejected: rejectedUser,
-            }}
-            userRecordRef={userRecordRef}
-          />
-          <div className="ticket-stats">
-            <TicketCountCard
-              status="closed"
-              title="approved"
-              count={usersCount.approved}
-              totalCount={usersCount.all}
+        <div className="records" ref={userRecordRef}>
+          <h4
+            className="records-title"
+            style={{ background: "var(--admin-content-bg-gradient)" }}
+          >
+            <span className="records-title-ring"></span>
+            <span>user records</span>
+            <span className="records-title-ring"></span>
+          </h4>
+          <div className="records-stats">
+            <UserTable
+              fetchUsers={fetchUsers}
+              userList={{
+                all: allUser,
+                approved: approvedUser,
+                pending: pendingUser,
+                rejected: rejectedUser,
+              }}
+              userRecordRef={userRecordRef}
             />
-            <TicketCountCard
-              status="pending"
-              title="pending"
-              count={usersCount.pending}
-              totalCount={usersCount.all}
-            />
-            <TicketCountCard
-              status="blocked"
-              title="rejected"
-              count={usersCount.rejected}
-              totalCount={usersCount.all}
-            />
+            <div className="ticket-stats">
+              <TicketCountCard
+                status="closed"
+                title="approved"
+                count={usersCount.approved}
+                totalCount={usersCount.all}
+              />
+              <TicketCountCard
+                status="pending"
+                title="pending"
+                count={usersCount.pending}
+                totalCount={usersCount.all}
+              />
+              <TicketCountCard
+                status="blocked"
+                title="rejected"
+                count={usersCount.rejected}
+                totalCount={usersCount.all}
+              />
+            </div>
           </div>
         </div>
+        <TicketModal
+          ticketModal={ticketModal}
+          onCloseTicketModal={onCloseTicketModal}
+          selectedCurrTicket={selectedCurrTicket}
+          onTicketUpdate={onTicketUpdate}
+          allUser={allUser}
+          updateTicket={updateTicket}
+          selectedCurrTicketStatus={selectedCurrTicketStatus}
+          setSelectedCurrTicketStatus={setSelectedCurrTicketStatus}
+          selectedCurrTicketAssignee={selectedCurrTicketAssignee}
+          setSelectedCurrTicketAssignee={setSelectedCurrTicketAssignee}
+          admin
+        />
+        <UserModal
+          userModal={userModal}
+          onCloseUserModal={onCloseUserModal}
+          updateUser={updateUser}
+          userDetail={userDetail}
+          changeUserDetail={changeUserDetail}
+          admin
+        />
       </div>
-      <TicketModal
-        ticketModal={ticketModal}
-        onCloseTicketModal={onCloseTicketModal}
-        selectedCurrTicket={selectedCurrTicket}
-        onTicketUpdate={onTicketUpdate}
-        allUser={allUser}
-        updateTicket={updateTicket}
-        selectedCurrTicketStatus={selectedCurrTicketStatus}
-        setSelectedCurrTicketStatus={setSelectedCurrTicketStatus}
-        selectedCurrTicketAssignee={selectedCurrTicketAssignee}
-        setSelectedCurrTicketAssignee={setSelectedCurrTicketAssignee}
-        admin
-      />
-      <UserModal
-        userModal={userModal}
-        onCloseUserModal={onCloseUserModal}
-        updateUser={updateUser}
-        userDetail={userDetail}
-        changeUserDetail={changeUserDetail}
-        admin
-      />
-      </div>
-      </>
+    </>
   );
 };
 

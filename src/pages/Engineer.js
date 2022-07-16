@@ -6,6 +6,7 @@ import TicketTable from "../components/TicketTable";
 import TicketModal from "../components/UI/modals/TicketModal";
 import { logout } from "../utils/logout";
 import RecordLoader from "../components/UI/RecordLoader";
+import Toast from "../components/Toast";
 
 const Engineer = () => {
   const [ticketModal, setTicketModal] = useState(false);
@@ -18,8 +19,13 @@ const Engineer = () => {
   const [selectedCurrTicket, setSelectedCurrTicket] = useState({});
   const [selectedCurrTicketStatus, setSelectedCurrTicketStatus] = useState("");
 
-  const [message, setMessage] = useState("");
+  const [apiMessage, setApiMessage] = useState("");
   const [showRecordLoader, setShowRecordLoader] = useState(false);
+  const [openToast, setOpenToast] = useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center',
+  });
 
   const ticketRecordRef = useRef();
   const topRef = useRef();
@@ -116,15 +122,38 @@ const Engineer = () => {
     const data = { ...selectedCurrTicket, status: selectedCurrTicketStatus }
     ticketUpdation(selectedCurrTicket.id, data)
       .then(function (response) {
-        setMessage("Ticket Updated Successfully");
+        setApiMessage({
+          status: 'success',
+          message: "Ticket Updated Successfully"
+        });
+        setOpenToast({
+          ...openToast,
+          open: true,
+        })
         setShowRecordLoader(false);
         fetchAllTickets();
       })
       .catch(function (error) {
-        if (error.status === 400) setMessage(error.message);
+        if (error.status === 400) {
+          setApiMessage({
+            status: 'error',
+            message: error.message,
+          });
+          setOpenToast({
+            ...openToast,
+            open: true,
+          })
+        }
         else if (error.response.status === 401) {
           logout();
-          setMessage("Authorization error, retry loging in");
+          setApiMessage({
+            status: 'error',
+            message: "Authorization error, retry loging in"
+          });
+          setOpenToast({
+            ...openToast,
+            open: true,
+          })
         }
         onCloseTicketModal();
       });
@@ -149,7 +178,7 @@ const Engineer = () => {
   return (
     <>
       {
-        showRecordLoader && <RecordLoader />
+        showRecordLoader ? <RecordLoader /> : <Toast info={apiMessage} openToast={openToast} setOpenToast={setOpenToast} />      
       }
     <div className="page-container" ref={topRef}>
       <Sidebar sidebarStyle={sidebarStyle} ticketRef={ticketRecordRef} topRef={topRef}/>

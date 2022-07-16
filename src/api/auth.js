@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Consume } from "../context";
 const BASE_URL = process.env.REACT_APP_SERVER_URL;
 
 export async function userSignup(data) {

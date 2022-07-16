@@ -166,6 +166,9 @@ background-color: var( --admin-tab-bg-color) !important;
 .eng-menuItem.css-n9b33d-MuiButtonBase-root-MuiMenuItem-root.Mui-selected{
 background-color: var( --engineer-tab-bg-color) !important;
 }
+.cx-menuItem.css-n9b33d-MuiButtonBase-root-MuiMenuItem-root.Mui-selected{
+background-color: var( --customer-tab-bg-color) !important;
+}
 .cx-textarea:focus{
   outline: none;
   border: 2px solid var(--customer-content-color) !important;
