@@ -31,8 +31,10 @@ const Engineer = () => {
   const topRef = useRef();
 
   const fetchAllTickets = () => {
+    setShowRecordLoader(true);
     fetchTickets()
       .then((response) => {
+        setShowRecordLoader(false);
         if (response.status === 200) {
           const data = response.data;
           const getOpenTicket = data.filter((ticket) => {
